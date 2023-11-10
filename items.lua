@@ -1,5 +1,7 @@
+Items = {}
+
 -- FIXME: This is conflicting with Jon's workflow; perhaps ask for user input?
-function set_bounds_to_items(args)
+Items.set_bounds_to_items = function(args)
     -- `set_bounds_to_items()` takes a table called `args` for easier passing of named arguments.
     -- Calling it with an empty `{}` denotes that all of the default parameter values will be used.
     -- For more, see here: https://www.lua.org/pil/5.3.html 
@@ -142,7 +144,7 @@ end
 --          unmuted media items
 --              media_item
 --              index
-function get_unmuted_regions(all_tracks)
+Items.get_unmuted_regions = function(all_tracks)
     -- reaper.ShowConsoleMsg("Running get_unmuted_regions()")
     local unmuted_regions = {}
 
@@ -158,3 +160,5 @@ function get_unmuted_regions(all_tracks)
         end
     end
 end
+
+return Items
