@@ -1,11 +1,14 @@
 dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
 
-function get_current_project_path()
+Project = {}
+
+Project.get_current_project_path = function() --> str
     local proj, str = reaper.EnumProjects(-1, "")
     return str
 end
 
-function get_project_info_as_obj()
+
+Project.get_project_info_as_obj = function() --> table
     local project_name = reaper.GetProjectName(0)
     local _, project_path = reaper.EnumProjects(-1, "")
     local project_dir = project_path:gsub(project_name, "") -- full path, minus .rpp project name
@@ -37,7 +40,7 @@ end
 -- )
 -- end
 
-function remove_rpp_from_string(s)
+Project.remove_rpp_from_string = function(s) --> str
     local start_index_lower, end_index_lower = string.find(s, ".rpp")
     local start_index_upper, end_index_upper = string.find(s, ".RPP")
 
@@ -49,7 +52,7 @@ function remove_rpp_from_string(s)
     end
 end
 
-function parse_project_name()
+Project.parse_project_name = function() -- table
     -- Returns a table with the following key/value pairs:
     -- project_code
     -- cue_number
@@ -107,3 +110,5 @@ function parse_project_name()
 
     return parsed_project_name
 end
+
+return Project
