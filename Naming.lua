@@ -1,6 +1,6 @@
-Naming = {}
-
-Naming.convention = "$project - $starttc",
-Naming.delimiter = " - "
+Naming = {
+    convention = "$project - $starttc",
+    delimiter = " - "
+}
 
 return Naming
