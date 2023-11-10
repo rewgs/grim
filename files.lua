@@ -1,4 +1,7 @@
-function write_to_file(file, text)
+Files = {}
+
+-- TODO: add return value
+Files.write_to_file = function(file, text) --> NoReturn
     local file = io.open(file, "w" )
     if file ~= nil then
         if text ~= nil then
@@ -7,3 +10,5 @@ function write_to_file(file, text)
         file:close()
     end
 end
+
+return Files
