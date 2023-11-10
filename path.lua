@@ -1,4 +1,6 @@
-function get_current_project_path()
+Path = {}
+
+Path.get_current_project_path = function() --> str
     local proj, str = reaper.EnumProjects(-1, "")
     return str
 end
@@ -15,7 +17,8 @@ end
 -- end
 
 
-function get_parent_path(subject, pattern)
+
+Path.get_parent_path = function(subject, pattern) --> bool
     local start_index, end_index = string.find(subject, pattern)
     local new_name = selected_track_name:gsub(mark .. " ", "")
     if start_index ~= nil and end_index ~= nil then
@@ -25,4 +28,4 @@ function get_parent_path(subject, pattern)
     end
 end
 
-
+return Path
