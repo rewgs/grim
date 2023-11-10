@@ -3,7 +3,11 @@ dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/misc.l
 dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
 
 
-function print_render_table(rt)
+Render = {}
+
+
+-- TODO: add return value? Maybe not since it's just calling ShowConsoleMsg...
+Render.print_render_table = function(rt)
     for key, value in pairs(rt) do
         reaper.ShowConsoleMsg(key .. ": " .. tostring(value) .. "\n")
     end
@@ -20,7 +24,7 @@ end
 -- declaration with its parameters here for reference.
 --
 -- function render(rt, dst_dir, file_name_arg)
-function render(args)
+Render.render = function(args) --> bool
     -- args
     local rt = args.rt
     local dst_dir = args.dst_dir
@@ -56,7 +60,7 @@ end
 -- NOTE: This is a temporary function in order to get render_multitrack() out the door.
 -- It requires its own file_name convention (defined in "export all child tracks"), and the line 
 -- `local file_name = args.file_name or rt.file_name` breaks render().
-function render2(args)
+Render.render2 = function(args) --> bool
     -- args
     local rt = args.rt
     local dst_dir = args.dst_dir
@@ -89,18 +93,20 @@ function render2(args)
     return true
 end
 
-function render_mix(rt, dir)
+
+Render.render_mix = function(rt, dir) --> bool
     local retval = render { rt = rt, dst_dir = dir }
     return retval
 end
 
-function render_mix_minus(rt, dir, file_name)
+
+Render.render_mix_minus = function(rt, dir, file_name) --> bool
     -- local retval = render(rt, dir, file_name)
     local retval = render { rt = rt, dst_dir = dir, file_name = file_name }
     return retval
 end
 
-function render_stems(stems_table, render_table, dir)
+Render.render_stems = function(stems_table, render_table, dir) --> bool
     -- function render_stems(args)
     -- local stems_table = args.st
     -- local render_table = args.rt
@@ -118,7 +124,7 @@ function render_stems(stems_table, render_table, dir)
     return retval
 end
 
-function render_multitrack(all_tracks, track, render_table, dir, file_name)
+Render.render_multitrack = function(all_tracks, track, render_table, dir, file_name) --> bool
     for _, t in ipairs(all_tracks) do
         if t.media_track == track.media_track then
             reaper.SetTrackSelected(track.media_track, true)
@@ -134,7 +140,7 @@ function render_multitrack(all_tracks, track, render_table, dir, file_name)
     return retval
 end
 
-function render_stems_include_silent(stems_table, rt, dir)
+Render.render_stems_include_silent = function(stems_table, rt, dir) --> bool
     -- reaper.ShowConsoleMsg("Running render_stems()")
     for _, stem in ipairs(stems_table) do
         -- Note: this is ALL wide stems, including those that are muted/don't have items/etc
@@ -146,7 +152,9 @@ function render_stems_include_silent(stems_table, rt, dir)
     return retval
 end
 
-function render_regions(regions_table, rt, dir)
+
+-- TODO: add return value
+Render.render_regions = function(regions_table, rt, dir) --> NoReturn
     local dst_dir = dir .. "all regions"
     -- render(rt, dst_dir)
     render { rt = rt, dst_dir = dst_dir }
@@ -171,3 +179,5 @@ end
 --         job()
 --     end
 -- end
+
+return Render
