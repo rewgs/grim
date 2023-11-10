@@ -1,4 +1,6 @@
-function is_list_like(t)
+Table = {}
+
+Table.is_list_like = function(t)
     local i = 0
     for _ in pairs(t) do
         i = i + 1
@@ -9,7 +11,7 @@ function is_list_like(t)
     return true
 end
 
-function recursively_traverse(t)
+Table.recursively_traverse = function(t)
     -- Recursively traverses the members of both list-like and dict-like tables.
     if type(t) ~= "table" then
         reaprint("recurisvely_traverse() requires that its arg be a table!")
@@ -36,7 +38,9 @@ function recursively_traverse(t)
     end
 end
 
-function recursively_search(search_term, input)
+-- TODO: change to:
+--      `recursively_search = function(t, query)` (reverse param order)
+Table.recursively_search = function(search_term, input)
     -- Searches for `search_term`, which is presumably an element of an list-like table, or a value of a dict-like table.
     -- Returns two values, depending on one of these outcomes:
     --  1. If `search_term` is a bad type (i.e. a table):
@@ -85,7 +89,8 @@ function recursively_search(search_term, input)
     end
 end
 
-function get_length_of_dict_like_table(t)
+
+Table.get_length_of_dict_like_table = function(t)
     local count = 0
     for _ in pairs(t) do
         count = count + 1
@@ -93,19 +98,19 @@ function get_length_of_dict_like_table(t)
     return count
 end
 
-function print_names_of_track_table(t)
+Table.print_names_of_track_table = function(t)
     for i, track in ipairs(t) do
         reaper.ShowConsoleMsg(track.number .. ": " .. track.name .. "\n")
     end
 end
 
-function print_values_of_table_keys(t)
+Table.print_values_of_table_keys = function(t)
     for key, value in pairs(t) do
         reaper.ShowConsoleMsg(key .. ": " .. tostring(value) .. "\n")
     end
 end
 
-function remove_duplicates_from_table(t)
+Table.remove_duplicates_from_table = function(t)
     local hash = {}
     local res = {}
     for _, v in ipairs(t) do
@@ -117,7 +122,8 @@ function remove_duplicates_from_table(t)
     return res
 end
 
-function table_contains(table, value)
+-- TODO: change to `contains()`
+Table.table_contains = function(table, value)
     for i = 1, #table do
         if (table[i] == value) then
             return true
@@ -125,3 +131,5 @@ function table_contains(table, value)
     end
     return false
 end
+
+return Table
