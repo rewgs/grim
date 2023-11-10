@@ -1,6 +1,8 @@
+Utils = {}
+
 -- This is a function that enables single-line, relative path imports of other lua files.
 -- Written by Xenakios in this thread: https://forums.cockos.com/showthread.php?t=174073
-function reaDoFile(file)
+Utils.reaDoFile = function(file)
     local info = debug.getinfo(1, 'S')
     local script_path = info.source:match [[^@?(.*[\/])[^\/]-$]]
     dofile(script_path .. file)
@@ -12,13 +14,13 @@ end
 
 
 -- expects `file` to be `debug.getinfo(1, 'S')`
-function get_file_name(file)
+Utils.get_file_name = function(file)
     return file:match("[^/]*.lua$")
 end
 
 
 -- FIXME
-function print_function_name()
+Utils.print_function_name = function()
     -- Prints the name of the currently-running function to the Reaper console.
     -- If function is `main()`, print the name of the file instead.
 
@@ -32,11 +34,16 @@ function print_function_name()
     end
 end
 
-function strip_whitespace_from_ends(str)
+Utils.strip_whitespace_from_ends = function(str)
     local stripped_str = str:gsub("^%s*(.-)%s*$", "%1")
     return stripped_str
 end
 
-function reaprint(msg)
+-- TODO:
+    -- Add return value
+    -- Convert msg to args
+Utils.reaprint = function(msg)
     reaper.ShowConsoleMsg(tostring(msg) .. "\n")
 end
+
+return Utils
