@@ -1,7 +1,9 @@
 dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/project.lua")
 local p = parse_project_name()
 
-rt_master_wav = {
+Render_Tables = {}
+
+Render_Tables.master_wav = {
     render_table_name = "master_wav",
 
     -- 0, Master mix;
@@ -56,7 +58,7 @@ rt_master_wav = {
 }
 
 
-rt_master_mp3 = {
+Render_Tables.master_mp3 = {
     render_table_name = "master_mp3",
 
     -- 0, Master mix;
@@ -107,7 +109,7 @@ rt_master_mp3 = {
 
 -- FIXME: not yet working, always setting to wav, not video...the problem probably lies in the render string
 -- TODO: normalize it to -24 LUFS; also does this for audio demos
-rt_video = {
+Render_Tables.video = {
     render_table_name = "video",
 
     -- from old function; keeping for now
@@ -198,7 +200,7 @@ rt_video = {
 }
 
 
-rt_stems = {
+Render_Tables.stems = {
     render_table_name = "stems",
 
     -- 0, Master mix;
@@ -254,7 +256,7 @@ rt_stems = {
 }
 
 -- NOTE: same as rt_stems, except silently_increment_filename is true
-rt_multitrack = {
+Render_Tables.multitrack = {
     render_table_name = "multitrack",
 
     -- 0, Master mix;
@@ -310,7 +312,7 @@ rt_multitrack = {
 }
 
 
-rt_regions = {
+Render_Tables.regions = {
     render_table_name = "all_regions",
 
     -- 0, Master mix;
@@ -390,7 +392,7 @@ rt_regions = {
     close_after_render = true,
 }
 
-rt_mix_minus = {
+Render_Tables.mix_minus = {
     render_table_name = "mix_minus",
 
     -- 0, Master mix;
@@ -444,12 +446,4 @@ rt_mix_minus = {
     close_after_render = true,
 }
 
-render_tables = {
-    master_wav = rt_master_wav,
-    master_mp3 = rt_master_mp3,
-    mix_minus = rt_mix_minus,
-    stems = rt_stems,
-    video = rt_video
-}
-
-return render_tables
+return Render_Tables
