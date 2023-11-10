@@ -1,6 +1,8 @@
 dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/track-marks.lua")
 
-function get_all_tracks()
+Tracks = {}
+
+Tracks.get_all_tracks = function()
     local all_tracks = get_all_tracks_as_objects()
     for _, track in ipairs(all_tracks) do
         track.children = get_children_of(track)
@@ -9,7 +11,7 @@ function get_all_tracks()
     return all_tracks
 end
 
-function get_children_of(parent)
+Tracks.get_children_of = function(parent)
     -- args:
     -- track:
     --  a track (as returned in get_all_tracks_as_objects() -- *not* a media_track (though,
@@ -38,7 +40,7 @@ function get_children_of(parent)
     return children
 end
 
-function get_all_tracks_as_objects()
+Tracks.get_all_tracks_as_objects = function()
     -- returns all tracks in project as an object with the following properties:
     -- media_track
     -- index
@@ -110,7 +112,7 @@ end
 
 -- args are parent tracks to ignore i.e. not include them or their child tracks in `child_tracks`
 -- TODO: This currently only ignores immediate non-folder children of the ignored parent; folders under parent are not ignored.
-function get_all_child_tracks(args)
+Tracks.get_all_child_tracks = function(args)
     local parents_to_ignore = args
 
     local all_tracks = get_all_tracks_as_objects()
@@ -135,7 +137,7 @@ end
 
 -- This is intended to be an improvement over get_all_child_tracks
 -- Allows the ability to ignore muted and empty tracks.
-function get_all_child_tracks_2(args)
+Tracks.get_all_child_tracks_2 = function(args)
     --@type table
     local parents_to_ignore = args.parents_to_ignore
     --@type bool
@@ -172,7 +174,7 @@ function get_all_child_tracks_2(args)
 end
 
 -- TODO
-function get_all_child_tracks_2(args)
+Tracks.get_all_child_tracks_2 = function(args)
     -- Ignores all tracks, including other folders, below ignored parent tracks
     -- NOTE: args is a table of strings representing track names to ignore
 
@@ -238,7 +240,7 @@ function get_all_child_tracks_2(args)
     return child_tracks
 end
 
-function get_parent_track_name(parent_track)
+Tracks.get_parent_track_name = function(parent_track)
     for i = 0, reaper.CountTracks(0) - 1 do
         local track = reaper.GetTrack(0, i)
 
@@ -252,7 +254,7 @@ function get_parent_track_name(parent_track)
     end
 end
 
-function create_named_audio_click_track()
+Tracks.create_named_audio_click_track = function()
     local function get_click_tracks()
         total_num_tracks = reaper.CountTracks(0)
         click_tracks = {}
@@ -373,7 +375,7 @@ end
 -- end
 
 
-function get_skinny_stems(all_tracks)
+Tracks.get_skinny_stems = function(all_tracks)
     -- Returns a table containing all folder tracks one level below "Music Sub Mix," except for
     --  Orchestra and Effects.
     --
@@ -405,7 +407,7 @@ function get_skinny_stems(all_tracks)
     return skinny_stems
 end
 
-function get_wide_stems(all_tracks)
+Tracks.get_wide_stems = function(all_tracks)
     -- Returns a table containing the lowest-depth folder tracks below those specified in
     --  `get_skinny_stems()`.
     --
@@ -448,17 +450,17 @@ function get_wide_stems(all_tracks)
     return wide_stems
 end
 
-function get_silent_skinny_stems()
+Tracks.get_silent_skinny_stems = function()
     -- Returns a table containing only the stems returned by `get_skinny_stems()` that will print
     --  silence.
     print("Running get_silent_skinny_stems()")
 end
 
-function get_silent_wide_stems()
+Tracks.get_silent_wide_stems = function()
     print("Running get_silent_wide_stems()")
 end
 
-function get_family_tree(t)
+Tracks.get_family_tree = function(t)
     -- Takes a table `t` and returns a table `family` where each item in `t` is the value of key
     -- `parent`, and each child is added to a table `children` within table `family`, like so:
     --
@@ -505,7 +507,7 @@ function get_family_tree(t)
     return family_tree
 end
 
-function get_next_track_obj(current_track, all_tracks)
+Tracks.get_next_track_obj = function(current_track, all_tracks)
     local next_track = reaper.GetTrack(0, current_track.number + 1)
 
     for i, track in ipairs(all_tracks) do
@@ -515,7 +517,7 @@ function get_next_track_obj(current_track, all_tracks)
     end
 end
 
-function get_child_folder_tracks_of(parent_folder_track, next_folder_track, all_tracks)
+Tracks.get_child_folder_tracks_of = function(parent_folder_track, next_folder_track, all_tracks)
     local child_folder_tracks = {}
 
     local next_track = get_next_track_obj(parent_folder_track, all_tracks)
@@ -545,7 +547,7 @@ function get_child_folder_tracks_of(parent_folder_track, next_folder_track, all_
     -- end
 end
 
-function get_tracks_to_print()
+Tracks.get_tracks_to_print = function()
     local tracks_to_print = {}
 
     for t = 0, reaper.CountTracks(0) - 1 do
@@ -581,7 +583,7 @@ function get_tracks_to_print()
     return tracks_to_print
 end
 
-function search_up_family_tree(track, table)
+Tracks.search_up_family_tree = function(track, table)
     for i = 0, reaper.CountTracks(0) - 1 do
         local track = reaper.GetTrack(0, i)
         local parent_track = reaper.GetMediaTrackInfo_Value(track, "P_PARTRACK")
@@ -598,7 +600,7 @@ function search_up_family_tree(track, table)
     end
 end
 
-function is_child(track)
+Tracks.is_child = function(track)
     if reaper.GetMediaTrackInfo_Value(track, "I_FOLDERDEPTH") == 1 then
         return false
     else
@@ -606,7 +608,7 @@ function is_child(track)
     end
 end
 
-function is_marked(subject, pattern)
+Tracks.is_marked = function(subject, pattern)
     local start_index, end_index = string.find(subject, pattern)
     if start_index ~= nil and end_index ~= nil then
         return true
@@ -615,7 +617,7 @@ function is_marked(subject, pattern)
     end
 end
 
-function toggle_mark_track(mark)
+Tracks.toggle_mark_track = function(mark)
     for _, track in ipairs(get_all_tracks_as_objects()) do
         if track.is_selected == true and track.depth < 1 then
             if is_marked(track.name, mark) then
@@ -629,7 +631,7 @@ function toggle_mark_track(mark)
     end
 end
 
-function get_all_marked_tracks()
+Tracks.get_all_marked_tracks = function()
     local all_marked_tracks = {}
     for _, track in ipairs(get_all_tracks_as_objects()) do
         for key, value in pairs(track_marks) do
@@ -643,7 +645,7 @@ function get_all_marked_tracks()
 end
 
 -- FIXME
-function get_marked_tracks(...)
+Tracks.get_marked_tracks = function(...)
     local marked_tracks = {}
     for _, track in ipairs(get_all_tracks_as_objects()) do
         for _, mark in ipairs(arg) do
@@ -657,7 +659,7 @@ function get_marked_tracks(...)
     return marked_tracks
 end
 
-function export_marked_tracks(marked_tracks)
+Tracks.export_marked_tracks = function(marked_tracks)
     for _, track in ipairs(get_all_tracks_as_objects()) do
         for _, marked_track in ipairs(marked_tracks) do
             if track.name == marked_track.name then
@@ -683,7 +685,7 @@ end
 
 -- FIXME: This function is acting a little weird, not always firing. Just adapting the meat of this
 -- function and straight-forwardly calling the SetMediaTrackInfo_Value() function whenever needed.
-function toggle_effects_track_mute_state()
+Tracks.toggle_effects_track_mute_state = function()
     for _, track in ipairs(get_all_tracks_as_objects()) do
         if track.name == "Effects" and track.depth == 1 then
             local muted = nil
@@ -700,7 +702,8 @@ function toggle_effects_track_mute_state()
     end
 end
 
-function unmute_effects()
+-- TODO: add return value
+Tracks.unmute_effects = function() --> NoReturn
     for _, track in ipairs(get_all_tracks_as_objects()) do
         if track.name == "Effects" and track.depth == 1 then
             local mute_state = reaper.SetMediaTrackInfo_Value(track.media_track, "B_MUTE", 0)
@@ -708,10 +711,13 @@ function unmute_effects()
     end
 end
 
-function mute_effects()
+-- TODO: add return value
+Tracks.mute_effects = function() --> NoReturn
     for _, track in ipairs(get_all_tracks_as_objects()) do
         if track.name == "Effects" and track.depth == 1 then
             local mute_state = reaper.SetMediaTrackInfo_Value(track.media_track, "B_MUTE", 1)
         end
     end
 end
+
+return Tracks
