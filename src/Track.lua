@@ -1,3 +1,6 @@
+-- NOTE: This will replace Tracks.lua
+-- Tracks will become a table of all tracks in the project, and will be a property defined in Project.lua
+
 dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/Naming.lua")
 
 Track = {
