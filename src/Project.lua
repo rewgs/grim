@@ -1,4 +1,4 @@
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
+dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/Naming.lua")
 
 Project = {}
 
