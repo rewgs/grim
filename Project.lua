@@ -2,7 +2,7 @@ dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.
 
 Project = {}
 
-Project.get_current_project_path = function() --> str
+Project.get_path = function() --> str
     local proj, str = reaper.EnumProjects(-1, "")
     return str
 end
@@ -10,7 +10,8 @@ end
 
 Project.get_project_info_as_obj = function() --> table
     local project_name = reaper.GetProjectName(0)
-    local _, project_path = reaper.EnumProjects(-1, "")
+    -- local _, project_path = reaper.EnumProjects(-1, "")
+    local project_path = Project.get_path()
     local project_dir = project_path:gsub(project_name, "") -- full path, minus .rpp project name
 
     local project_info_obj = {
@@ -18,7 +19,6 @@ Project.get_project_info_as_obj = function() --> table
         path = project_path,
         dir = project_dir
     }
-
     return project_info_obj
 end
 
