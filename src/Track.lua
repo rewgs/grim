@@ -1,11 +1,21 @@
 -- NOTE: This will replace Tracks.lua
 -- Tracks will become a table of all tracks in the project, and will be a property defined in Project.lua
 
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/Naming.lua")
+dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/Track-Marks.lua")
 
+-- This effectively defines the "class" Track.
 Track = {
-    index = i,
+    depth = reaper.GetMediaTrackInfo_Value(self.media_track, "I_FOLDERDEPTH")
 }
+
+-- Class properties and methods
+function Track:index(i)
+    if i == nil then
+        self.index = "n/a"
+    else
+        self.index = i
+    end
+end
 
 -- local _media_track = reaper.GetTrack(0, i)
 function Track:media_track(reaper_project, i)
@@ -69,16 +79,17 @@ end
 function Track:is_marked(track_marks)
     local marks = {}
     for _, mark in ipairs(track_marks) do
-        local start_index, end_index = string.find(self.name, mark)
-        if start_index ~= nil and end_index ~= nil then
+        local mark_start, mark_end = string.find(self.name, mark)
+        if mark_start ~= nil and mark_end ~= nil then
             table.insert(marks, mark)
         end
     end
     if #marks > 0 then
         self.marks = marks
+    else
+        self.marks = "n/a" -- This is to avoid a nil error in Reaper
     end
 end
-
 
 -- TODO
 -- function Track:children(reaper_project)

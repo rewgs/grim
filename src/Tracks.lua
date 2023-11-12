@@ -1,6 +1,18 @@
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/track-marks.lua")
+dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/Track-Marks.lua")
 
 Tracks = {}
+
+function Tracks:get()
+    local tracks = {}
+    for i = 0, reaper.CountTracks(0) - 1 do
+        -- Inserts to the table `tracks` a new instance of class Track
+        table.insert(tracks, Track.new {
+            reaper_project = 0,
+            i = i,
+            track_marks = Track_Marks
+        })
+    end
+end
 
 Tracks.get_all_tracks = function()
     local all_tracks = get_all_tracks_as_objects()
