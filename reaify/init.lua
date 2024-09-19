@@ -40,4 +40,22 @@ for _, file in ipairs(files_array) do
     end
 end
 
--- test_import()
+-- NOTE: Using this library as reference/inspiration:
+-- https://gitlab.com/adamnejm/lazy-lua/-/blob/master/init.lua?ref_type=heads
+return {
+	_VERSION        = "Reaify v0.0.1a",
+	_DESCRIPTION    = "Rewgs' Extension for the Reaper and Ultraschall Lua APIs",
+	_URL            = "https://github.com/rewgs/reaify",
+    -- TODO:
+	_LICENSE        = [[
+	]],
+	
+	-- os     = require_relative("os"),     ---@module "lazy.os"
+	-- math   = require_relative("math"),   ---@module "lazy.math"
+	-- table  = require_relative("table"),  ---@module "lazy.table"
+	-- string = require_relative("string"), ---@module "lazy.string"
+
+
+}
+
+
