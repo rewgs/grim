@@ -1,6 +1,6 @@
 # Reaify - Rewgs' Extension for the Reaper API. 
 
-Reaify is a library that provides a more object-oriented approach for interacting with both the Reaper Lua API, as well as the Ultraschall API.
+Reaify is a library that provides a more object-oriented approach for interacting with both the Reaper Lua API, as well as the Ultraschall API. Powers the [`rea`](https://github.com/rewgs/rea) script library.
 
 ## What's with the name?
 
