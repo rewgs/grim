@@ -1,9 +1,27 @@
-function write_to_file(file, text)
-    local file = io.open(file, "w" )
-    if file ~= nil then
+-- TODO: Return value?
+function WriteToFile(file, text)
+    local f = io.open(file, "w" )
+    if f ~= nil then
         if text ~= nil then
-            file:write(text)
+            f:write(text)
         end
-        file:close()
+        f:close()
     end
 end
+
+
+function GetFileName(file) --> string
+    return file:match("[^/]*.lua$")
+end
+
+
+function FileExists(name) --> bool
+    local f = io.open(name, "r")
+    if f ~= nil then
+        io.close(f)
+        return true
+    else
+        return false
+    end
+end
+
