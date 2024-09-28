@@ -1,3 +1,6 @@
+-- Ideally, this should be very easily user-configurable.
+-- Need to have a deliverables config dir, and create those with lua?
+
 function package_deliveries(project_dir)
     -- This function copies any renders made by render_assets() and copies them to the appropriate
     -- folder, i.e. we can define who gets what and collect everything they need.
