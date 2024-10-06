@@ -1,6 +1,6 @@
 -- dofile(reaper.GetResourcePath() .. "Scripts/rewgs-reaper-scripts/scripts/export-audio/modules/render-tables.lua")
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/misc.lua")
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
+-- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/misc.lua")
+-- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
 
 
 function Print_render_table(rt)

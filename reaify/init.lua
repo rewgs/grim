@@ -1,13 +1,5 @@
 -- The entrypoint for the reaify library. 
 
-local lfs = require("lfs")
-
-local function isSymLink(filename) --> 
-    local a = lfs.attributes(filename)
-    local s = lfs.symlinkattributes(filename)
-    return a and s and ( a.dev ~= s.dev or a.ino ~= s.ino )
-  end
-
 local function fileExists(file) --> bool
     local f = io.open(file, "r")
     if f ~= nil then
@@ -17,11 +9,6 @@ local function fileExists(file) --> bool
         return false
     end
 end
-
-local function thisFile()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    return str:match("(.*/)")
- end
 
 -- Loads the Ultraschall API into the Reaify namespace.
 local function loadUltraschall(ultraschall_path)
@@ -42,22 +29,41 @@ local function loadUltraschall(ultraschall_path)
 end
 
 
-local function loadReaify(reaify_path)
+local function loadReaify(reaify)
     -- Returns all subdirectories and files within a given path.
     -- Might take some time with many folders/files.
     -- Optionally, you can filter for specific keywords(follows Lua's pattern-matching)
     -- Returns -1 in case of an error.
+    -- 
     -- Lua: integer found_dirs, array dirs_array, integer found_files, array files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(string path, optional string dir_filter, optional string dir_case_sensitive, optional string file_filter, optional string file_case_sensitive)
-    local num_found_dirs, dirs_array, num_found_files, files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(reaify)
+    local num_found_dirs, dirs_array, num_found_files, files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(reaify.root)
 
     -- Imports all files found in the reaify directory.
     -- Never imports the name of the file that's calling it -- this allows modules to use the same
     -- `dofile()` line as scripts: dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/init.lua")
     -- TODO: filter only .lua files
+    local filesWithErrs = {}
     for _, file in ipairs(files_array) do
-        if file ~= reaify then
+        if file ~= reaify.initFile then
             -- reaper.ShowConsoleMsg(file .. "\n")
-            dofile(file)
+
+            -- dofile(file)
+
+            -- FIXME: 
+            -- Looking to track which files are problematic and then *only* `dofile()` the non-problematic ones.
+            -- According to this, this should work: https://stackoverflow.com/questions/53343443/load-lua-file-and-catch-any-syntax-errors
+            -- But it doesn't. Why?
+            local success, err = loadfile(file)
+            if not success then
+                table.insert({file, err})
+            end
+        end
+    end
+    if #filesWithErrs > 0 then
+        reaper.ShowConsoleMsg("The following files had the following errors:\n")
+        for _, file in filesWithErrs do
+            reaper.ShowConsoleMsg("File: " .. file[1])
+            reaper.ShowConsoleMsg("Error: " .. file[2])
         end
     end
 end
@@ -71,30 +77,31 @@ local function main()
     path.userPlugins = path.reaperResources .. "/UserPlugins/"
 
     -- The actual location of this path.
-    path.thisFile = debug.getinfo(2, "S").source:sub(2):match("(.*/)")
-    reaper.ShowConsoleMsg(path.thisFile)
+    path.this = {}
+    path.this.file = debug.getinfo(1, "S").source
+    path.this.parentDir = debug.getinfo(2, "S").source:sub(2):match("(.*/)")
 
     -- This is what the path *should* be, not necessarily what it *is.*
-    path.reaify = {
-        root = path.userPlugins .. "reaify/" .. "reaify/",
-        initFile = path.reaify.root .. thisFileName,
-    }
+    path.reaify = {}
+    path.reaify.root = path.userPlugins .. "reaify/" .. "reaify"
+    path.reaify.initFile = path.reaify.root .. "/" .. thisFileName
 
     path.ultraschall = path.userPlugins .. "ultraschall_api.lua"
 
-    -- local title
-    -- local msg
-    -- if not fileExists(path.thisFile) then
-    --     title = "Error loading Reaify!"
-    --     msg = "Reaify is not properly installed! It should be located at: " .. path.reaify
+    -- Checking paths.
+    if not path.this.file == path.reaify.initFile then
+        local title = "Error loading Reaify!"
+        local msg = "Reaify is not properly installed! It should be located at: " .. path.reaify.initFile .. "; but is instead at: " ..  path.this.file .. "!"
+        _ = reaper.ShowMessageBox(msg, title, 0)
+    -- NOTE: Only present for debugging. Usually leave this commented out.
     -- else
-    --     title = "Successfully loaded Reaify!"
-    --     msg = "Reaify was successfully found at: " .. path.reaify
-    -- end
-    -- _ = reaper.ShowMessageBox(msg, title, 0)
+    --     local title = "Successfully loaded Reaify!"
+    --     local msg = "Reaify was successfully found at: " .. path.this.file .. ". Enjoy!"
+    --     _ = reaper.ShowMessageBox(msg, title, 0)
+    end
 
-    -- loadUltraschall(path.ultraschall)
-    -- loadReaify(path.reaify)
+    loadUltraschall(path.ultraschall)
+    loadReaify(path.reaify)
 end
 main()
 

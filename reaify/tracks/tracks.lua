@@ -1,4 +1,4 @@
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/track-marks.lua")
+-- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/track-marks.lua")
 
 function get_all_tracks()
     local all_tracks = get_all_tracks_as_objects()

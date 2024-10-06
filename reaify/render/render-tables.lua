@@ -1,5 +1,5 @@
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/project.lua")
-local p = parse_project_name()
+-- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/project.lua")
+-- local p = parse_project_name()
 
 rt_master_wav = {
     render_table_name = "master_wav",

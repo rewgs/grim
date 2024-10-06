@@ -1,4 +1,4 @@
-dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
+-- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
 
 function get_current_project_path()
     local proj, str = reaper.EnumProjects(-1, "")
