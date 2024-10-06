@@ -1,64 +1,48 @@
 -- The entrypoint for the reaify library.
--- 
+
+local function fileExists(file) --> bool
+    local f = io.open(file, "r")
+    if f ~= nil then
+        io.close(f)
+        return true
+    else
+        return false
+    end
+end
 
 -- Loads the Ultraschall API into the Reaify namespace.
--- Installs Ultraschall if not installed already.
-local function loadUltraschall(reaperResourcePath)
+local function loadUltraschall(ultraschall_path)
+    -- TODO:
     -- Installs Ultraschall via `git clone`:
     -- https://github.com/Ultraschall/ultraschall-lua-api-for-reaper
-    local function installUltraschall()
-    end
+    -- local function installUltraschall()
+    -- end
 
-    local function fileExists(name) --> bool
-        local f = io.open(name, "r")
-        if f ~= nil then
-            io.close(f)
-            return true
-        else
-            return false
-        end
-    end
-
-    local ultraschall_path = reaperResourcePath .. "/UserPlugins/ultraschall_api.lua"
     if fileExists(ultraschall_path) then
         dofile(ultraschall_path)
+    end
+
+    if not ultraschall or not ultraschall.GetApiVersion then
+        reaper.MB("Please install Ultraschall API, available via Reapack. Check online doc of the script for more infos.\nhttps://github.com/Ultraschall/ultraschall-lua-api-for-reaper", "Error", 0)
+        return
     end
 end
 
 
-local function loadReaify(reaperResourcePath)
-    loadUltraschall(reaperResourcePath)
-
-    -- TODO: redo paths
-
-    local rewgs_scripts = rewgs_reaper_scripts_root .. "/scripts"
-    local rewgs_modules = rewgs_reaper_scripts_root .. "/modules"
-
-    -- reaper.ShowConsoleMsg(rewgs_reaper_scripts_root .. "\n")
-    -- reaper.ShowConsoleMsg(rewgs_scripts .. "\n")
-    -- reaper.ShowConsoleMsg(rewgs_modules .. "\n")
-
-    -- NOTE: moved out of this function
-    -- local info = debug.getinfo(1, 'S')
-    -- local this_file_name = info.source:match("[^/]*.lua$")
-    -- local this_file_path = rewgs_modules .. "/" .. this_file_name
-
-    -- reaper.ShowConsoleMsg(info.source)
-    -- reaper.ShowConsoleMsg(this_file_path)
-
+local function loadReaify(reaify_path)
     -- Returns all subdirectories and files within a given path.
     -- Might take some time with many folders/files.
     -- Optionally, you can filter for specific keywords(follows Lua's pattern-matching)
     -- Returns -1 in case of an error.
     -- Lua: integer found_dirs, array dirs_array, integer found_files, array files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(string path, optional string dir_filter, optional string dir_case_sensitive, optional string file_filter, optional string file_case_sensitive)
-    local num_found_dirs, dirs_array, num_found_files, files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(rewgs_modules)
+    local num_found_dirs, dirs_array, num_found_files, files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(reaify)
 
-    -- Imports all files found in the modules directory.
+    -- Imports all files found in the reaify directory.
     -- Never imports the name of the file that's calling it -- this allows modules to use the same
     -- `dofile()` line as scripts: dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/init.lua")
     -- TODO: filter only .lua files
     for _, file in ipairs(files_array) do
-        if file ~= this_file_path then
+        if file ~= reaify then
             -- reaper.ShowConsoleMsg(file .. "\n")
             dofile(file)
         end
@@ -67,16 +51,28 @@ end
 
 
 local function main()
-    -- local info = debug.getinfo(1, 'S')
-    -- local thisFileName = info.source:match("[^/]*.lua$")
-    local thisFileName = debug.getinfo(1, 'S').source:match("[^/]*.lua$")
+    thisFileName = debug.getinfo(1, 'S').source:match("[^/]*.lua$")
 
-    -- TODO: redo so that rewgs_modules isn't required
-    -- local thisFilePath = rewgs_modules .. "/" .. this_file_name
+    local path = {}
+    path.reaperResources = reaper.GetResourcePath()
+    path.userPlugins = path.reaperResources .. "/UserPlugins/"
+    path.reaify = path.UserPlugins .. "reaify/" .. "reaify/"
+    path.thisFile = path.reaify .. thisFileName
+    path.ultraschall = path.userPlugins .. ultraschall_api.lua
 
-    local reaperResourcePath = reaper.GetResourcePath()
+    local title
+    local msg
+    if not fileExists(path.thisFile) then
+        title = "Error loading Reaify!"
+        msg = "Reaify is not properly installed! It should be located at: " .. path.reaify
+    else
+        title = "Successfully loaded Reaify!"
+        msg = "Reaify was successfully found at: " .. path.reaify
+    end
+    _ = reaper.ShowMessageBox(msg, title, 0)
 
-    loadReaify(reaperResourcePath)
+    -- loadUltraschall(path.ultraschall)
+    -- loadReaify(path.reaify)
 end
 
 
