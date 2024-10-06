@@ -1,6 +1,9 @@
+-- The entrypoint for the reaify library.
+-- 
+
 -- Loads the Ultraschall API into the Reaify namespace.
 -- Installs Ultraschall if not installed already.
-local function loadUltraschall()
+local function loadUltraschall(reaperResourcePath)
     -- Installs Ultraschall via `git clone`:
     -- https://github.com/Ultraschall/ultraschall-lua-api-for-reaper
     local function installUltraschall()
@@ -16,17 +19,18 @@ local function loadUltraschall()
         end
     end
 
-    local ultraschall_path = reaper.GetResourcePath() .. "/UserPlugins/ultraschall_api.lua"
+    local ultraschall_path = reaperResourcePath .. "/UserPlugins/ultraschall_api.lua"
     if fileExists(ultraschall_path) then
         dofile(ultraschall_path)
     end
 end
 
 
-local function loadReaify()
-    loadUltraschall()
+local function loadReaify(reaperResourcePath)
+    loadUltraschall(reaperResourcePath)
 
-    local rewgs_reaper_scripts_root = reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts"
+    -- TODO: redo paths
+
     local rewgs_scripts = rewgs_reaper_scripts_root .. "/scripts"
     local rewgs_modules = rewgs_reaper_scripts_root .. "/modules"
 
@@ -34,9 +38,10 @@ local function loadReaify()
     -- reaper.ShowConsoleMsg(rewgs_scripts .. "\n")
     -- reaper.ShowConsoleMsg(rewgs_modules .. "\n")
 
-    local info = debug.getinfo(1, 'S')
-    local this_file_name = info.source:match("[^/]*.lua$")
-    local this_file_path = rewgs_modules .. "/" .. this_file_name
+    -- NOTE: moved out of this function
+    -- local info = debug.getinfo(1, 'S')
+    -- local this_file_name = info.source:match("[^/]*.lua$")
+    -- local this_file_path = rewgs_modules .. "/" .. this_file_name
 
     -- reaper.ShowConsoleMsg(info.source)
     -- reaper.ShowConsoleMsg(this_file_path)
@@ -59,6 +64,22 @@ local function loadReaify()
         end
     end
 end
+
+
+local function main()
+    -- local info = debug.getinfo(1, 'S')
+    -- local thisFileName = info.source:match("[^/]*.lua$")
+    local thisFileName = debug.getinfo(1, 'S').source:match("[^/]*.lua$")
+
+    -- TODO: redo so that rewgs_modules isn't required
+    -- local thisFilePath = rewgs_modules .. "/" .. this_file_name
+
+    local reaperResourcePath = reaper.GetResourcePath()
+
+    loadReaify(reaperResourcePath)
+end
+
+
 
 
 -- NOTE: Using this library as reference/inspiration:
