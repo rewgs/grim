@@ -1,4 +1,12 @@
--- The entrypoint for the reaify library.
+-- The entrypoint for the reaify library. 
+
+local lfs = require("lfs")
+
+local function isSymLink(filename) --> 
+    local a = lfs.attributes(filename)
+    local s = lfs.symlinkattributes(filename)
+    return a and s and ( a.dev ~= s.dev or a.ino ~= s.ino )
+  end
 
 local function fileExists(file) --> bool
     local f = io.open(file, "r")
@@ -9,6 +17,11 @@ local function fileExists(file) --> bool
         return false
     end
 end
+
+local function thisFile()
+    local str = debug.getinfo(2, "S").source:sub(2)
+    return str:match("(.*/)")
+ end
 
 -- Loads the Ultraschall API into the Reaify namespace.
 local function loadUltraschall(ultraschall_path)
@@ -51,29 +64,39 @@ end
 
 
 local function main()
-    thisFileName = debug.getinfo(1, 'S').source:match("[^/]*.lua$")
+    local thisFileName = debug.getinfo(1, 'S').source:match("[^/]*.lua$")
 
     local path = {}
     path.reaperResources = reaper.GetResourcePath()
     path.userPlugins = path.reaperResources .. "/UserPlugins/"
-    path.reaify = path.UserPlugins .. "reaify/" .. "reaify/"
-    path.thisFile = path.reaify .. thisFileName
-    path.ultraschall = path.userPlugins .. ultraschall_api.lua
 
-    local title
-    local msg
-    if not fileExists(path.thisFile) then
-        title = "Error loading Reaify!"
-        msg = "Reaify is not properly installed! It should be located at: " .. path.reaify
-    else
-        title = "Successfully loaded Reaify!"
-        msg = "Reaify was successfully found at: " .. path.reaify
-    end
-    _ = reaper.ShowMessageBox(msg, title, 0)
+    -- The actual location of this path.
+    path.thisFile = debug.getinfo(2, "S").source:sub(2):match("(.*/)")
+    reaper.ShowConsoleMsg(path.thisFile)
+
+    -- This is what the path *should* be, not necessarily what it *is.*
+    path.reaify = {
+        root = path.userPlugins .. "reaify/" .. "reaify/",
+        initFile = path.reaify.root .. thisFileName,
+    }
+
+    path.ultraschall = path.userPlugins .. "ultraschall_api.lua"
+
+    -- local title
+    -- local msg
+    -- if not fileExists(path.thisFile) then
+    --     title = "Error loading Reaify!"
+    --     msg = "Reaify is not properly installed! It should be located at: " .. path.reaify
+    -- else
+    --     title = "Successfully loaded Reaify!"
+    --     msg = "Reaify was successfully found at: " .. path.reaify
+    -- end
+    -- _ = reaper.ShowMessageBox(msg, title, 0)
 
     -- loadUltraschall(path.ultraschall)
     -- loadReaify(path.reaify)
 end
+main()
 
 
 
