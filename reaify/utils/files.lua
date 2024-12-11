@@ -1,6 +1,5 @@
--- TODO: Return value?
-function WriteToFile(file, text)
-    local f = io.open(file, "w" )
+function WriteToFile(file, text) --> nil
+    local f = io.open(file, "w")
     if f ~= nil then
         if text ~= nil then
             f:write(text)
@@ -9,11 +8,9 @@ function WriteToFile(file, text)
     end
 end
 
-
 function GetFileName(file) --> string
     return file:match("[^/]*.lua$")
 end
-
 
 function FileExists(name) --> bool
     local f = io.open(name, "r")
@@ -24,4 +21,3 @@ function FileExists(name) --> bool
         return false
     end
 end
-

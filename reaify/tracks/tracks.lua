@@ -1,15 +1,23 @@
 -- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/track-marks.lua")
 
-function get_all_tracks()
-    local all_tracks = get_all_tracks_as_objects()
+
+-- TODO: Use reaproject arg to specify which project.
+function GetAllTracks(reaproject)
+    local all_tracks = GetAllTracks()
     for _, track in ipairs(all_tracks) do
-        track.children = get_children_of(track)
+        track.children = GetChildrenOf(track)
     end
 
     return all_tracks
 end
 
-function get_children_of(parent)
+-- Returns a tree-like representation of tracks (w/r/t child/parent relationship).
+---@type tracks: list, reaper.MediaTrack
+function GetTree(tracks)
+end
+
+---@type parent: reaper.MediaItem
+function GetChildrenOf(parent)
     -- args:
     -- track:
     --  a track (as returned in get_all_tracks_as_objects() -- *not* a media_track (though,
@@ -17,7 +25,7 @@ function get_children_of(parent)
     --  children which are parent tracks themselves).
     --
     local children = {}
-    for i, track in ipairs(get_all_tracks_as_objects()) do
+    for i, track in ipairs(GetAllTracks()) do
         --  0 = normal
         --  1 = track is a folder parent
         -- -1 = track is the last in the innermost folder,
@@ -38,30 +46,8 @@ function get_children_of(parent)
     return children
 end
 
-function get_all_tracks_as_objects()
-    -- returns all tracks in project as an object with the following properties:
-    -- media_track
-    -- index
-    -- name
-    -- depth
-    -- parent
-    -- children = {
-    --      media_track,
-    --      index,
-    --      etc...
-    -- }
-    -- num_media_items
-    -- is_selected
-    -- track_mute_state
-    -- items = {
-    --      {
-    --          media_item,
-    --          index,
-    --          mute_state
-    --      }
-    -- }
-    --
-
+-- Returns all tracks in project as MediaTrack objects with all available properties.
+function GetAllTracks()
     local all_tracks = {}
     for i = 0, reaper.CountTracks(0) - 1 do
         local _media_track = reaper.GetTrack(0, i)
@@ -113,7 +99,7 @@ end
 function get_all_child_tracks(args)
     local parents_to_ignore = args
 
-    local all_tracks = get_all_tracks_as_objects()
+    local all_tracks = GetAllTracks()
     local child_tracks = {}
 
     if parents_to_ignore ~= nil and #parents_to_ignore > 0 then
@@ -141,7 +127,7 @@ function get_all_child_tracks_2(args)
     --@type bool
     local ignore_silent = args.ignore_silent
 
-    local all_tracks = get_all_tracks_as_objects()
+    local all_tracks = GetAllTracks()
     local child_tracks = {}
 
     if parents_to_ignore ~= nil and #parents_to_ignore > 0 then
@@ -204,7 +190,7 @@ function get_all_child_tracks_2(args)
         return tracks_with_forbidden_parent
     end
 
-    local all_tracks = get_all_tracks_as_objects()
+    local all_tracks = GetAllTracks()
     local child_tracks = {}
 
     if args ~= nil and #args > 0 then
@@ -252,7 +238,7 @@ function get_parent_track_name(parent_track)
     end
 end
 
-function create_named_audio_click_track()
+function CreateClickTrack(name="Click")
     local function get_click_tracks()
         total_num_tracks = reaper.CountTracks(0)
         click_tracks = {}
@@ -489,7 +475,7 @@ function get_family_tree(t)
     --  }
 
     local family_tree = {}
-    for i, track in ipairs(get_all_tracks_as_objects()) do
+    for i, track in ipairs(GetAllTracks()) do
         local children = {}
         if track.depth <= 0 then
             for j, item in ipairs(t) do
@@ -598,7 +584,7 @@ function search_up_family_tree(track, table)
     end
 end
 
-function is_child(track)
+function IsChild(track)
     if reaper.GetMediaTrackInfo_Value(track, "I_FOLDERDEPTH") == 1 then
         return false
     else
@@ -616,7 +602,7 @@ function is_marked(subject, pattern)
 end
 
 function toggle_mark_track(mark)
-    for _, track in ipairs(get_all_tracks_as_objects()) do
+    for _, track in ipairs(GetAllTracks()) do
         if track.is_selected == true and track.depth < 1 then
             if is_marked(track.name, mark) then
                 local new_name = track.name:gsub(mark .. " ", "")
@@ -631,8 +617,8 @@ end
 
 function get_all_marked_tracks()
     local all_marked_tracks = {}
-    for _, track in ipairs(get_all_tracks_as_objects()) do
-        for key, value in pairs(track_marks) do
+    for _, track in ipairs(GetAllTracks()) do
+        for key, value in pairs(TrackMarks) do
             if is_marked(track.name, value) then
                 table.insert(all_marked_tracks, track)
             end
@@ -645,7 +631,7 @@ end
 -- FIXME
 function get_marked_tracks(...)
     local marked_tracks = {}
-    for _, track in ipairs(get_all_tracks_as_objects()) do
+    for _, track in ipairs(GetAllTracks()) do
         for _, mark in ipairs(arg) do
             if is_marked(track.name, mark) then
                 reaper.ShowConsoleMsg(track.name)
@@ -658,7 +644,7 @@ function get_marked_tracks(...)
 end
 
 function export_marked_tracks(marked_tracks)
-    for _, track in ipairs(get_all_tracks_as_objects()) do
+    for _, track in ipairs(GetAllTracks()) do
         for _, marked_track in ipairs(marked_tracks) do
             if track.name == marked_track.name then
                 reaper.SetTrackSelected(track.media_track, true)
@@ -684,7 +670,7 @@ end
 -- FIXME: This function is acting a little weird, not always firing. Just adapting the meat of this
 -- function and straight-forwardly calling the SetMediaTrackInfo_Value() function whenever needed.
 function toggle_effects_track_mute_state()
-    for _, track in ipairs(get_all_tracks_as_objects()) do
+    for _, track in ipairs(GetAllTracks()) do
         if track.name == "Effects" and track.depth == 1 then
             local muted = nil
             if track.track_mute_state == 0 then
@@ -700,17 +686,17 @@ function toggle_effects_track_mute_state()
     end
 end
 
-function unmute_effects()
-    for _, track in ipairs(get_all_tracks_as_objects()) do
-        if track.name == "Effects" and track.depth == 1 then
+function UnmuteTrack(name)
+    for _, track in ipairs(GetAllTracks()) do
+        if track.name == name and track.depth == 1 then
             local mute_state = reaper.SetMediaTrackInfo_Value(track.media_track, "B_MUTE", 0)
         end
     end
 end
 
-function mute_effects()
-    for _, track in ipairs(get_all_tracks_as_objects()) do
-        if track.name == "Effects" and track.depth == 1 then
+function MuteTrack(name)
+    for _, track in ipairs(GetAllTracks()) do
+        if track.name == name and track.depth == 1 then
             local mute_state = reaper.SetMediaTrackInfo_Value(track.media_track, "B_MUTE", 1)
         end
     end

@@ -3,7 +3,7 @@
 -- dofile(reaper.GetResourcePath() .. "/Scripts/rewgs-reaper-scripts/modules/names.lua")
 
 
-function Print_render_table(rt)
+function PrintRenderTable(rt)
     for key, value in pairs(rt) do
         reaper.ShowConsoleMsg(key .. ": " .. tostring(value) .. "\n")
     end
@@ -54,7 +54,7 @@ function render(args)
 end
 
 -- NOTE: This is a temporary function in order to get render_multitrack() out the door.
--- It requires its own file_name convention (defined in "export all child tracks"), and the line 
+-- It requires its own file_name convention (defined in "export all child tracks"), and the line
 -- `local file_name = args.file_name or rt.file_name` breaks render().
 function render2(args)
     -- args

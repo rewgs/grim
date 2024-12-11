@@ -13,3 +13,8 @@ Powers the [`rea`](https://github.com/rewgs/rea) script library.
 <!-- `error loading module 'lfs' from file '/usr/local/lib/lua/5.4/lfs.so': dlopen(/usr/local/lib/lua/5.4/lfs.so, 0x0006): symbol not found in flat namespace '_luaL_argerror'` -->
 <!-- Looks like there's an effort to fix this here: https://forums.cockos.com/showthread.php?t=224972 -->
 <!-- 2. Install LuaLFS: `luarocks install luafilesystem` -->
+
+## Notes
+- [`items`](./reaify/items/) is old. Use [`item`](./reaify/item/) instead.
+- [`projects`](./reaify/projects/) is old. Use [`project`](./reaify/project/) instead.
+- [`tracks`](./reaify/tracks/) is old. Use [`track`](./reaify/track/) instead.

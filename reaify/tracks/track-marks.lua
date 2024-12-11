@@ -1,7 +1,7 @@
-track_marks = {
-    record = 'REC',
-    transcribe = 'TR',
-    improve = 'IM'
+TrackMarks = {
+    Record = 'REC',
+    Transcribe = 'TR',
+    Improve = 'IM'
 }
 
-return track_marks
+return TrackMarks
