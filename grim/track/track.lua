@@ -1,162 +1,67 @@
-dofile(reaper.GetResourcePath() .. "UserPlugins/reaify/reaify/utils/iterators.lua")
-dofile(reaper.GetResourcePath() .. "UserPlugins/reaify/reaify/item/item.lua")
+local folderDepth = require('grim.track.folder_depth')
+local utils = require('grim.track.utils')
 
--------------------------------------------------------------------------------
--- Folder Depth
--------------------------------------------------------------------------------
--- In Python terms, this is basically a dataclass; is also sort of Enum-ish.
--- It can be difficult to remember which integer specifies which type of folder
--- depth, so this table simply bundles them together.
-
-FolderDepth = {}
-
----@param num integer
----@param desc string
-function FolderDepth:new(num, desc) --> folderDepth
-    local new = {}
-    setmetatable(new, self)
-    self.__index = self
-
-    ---@type integer
-    self.num = num
-
-    ---@type string
-    self.desc = desc
-
-    return new
-end
-
--------------------------------------------------------------------------------
--- Private functions - Track
--------------------------------------------------------------------------------
--- These are effectively "static methods" in Python terms.
--- The way the Reaper API is structured, being able to get track information
--- about *any* reaper.MediaTrack, not just the `self._` MediaTrack object,
--- makes the public methods much cleaner.
-
--- Returns the 1-based track number (as represented in the Reaper GUI).
---
--- args:
--- mediaTrack: reaper.MediaTrack
-local function getTrackNumber(mediaTrack) --> integer
-    -- >= 1: track number (1-based)
-    -- 0: not found
-    -- -1: master track
-    local trackNumber = reaper.GetMediaTrackInfo_Value(mediaTrack, "IP_TRACKNUMBER")
-    return trackNumber
-end
-
--- Returns the 0-based track index (as represented in the Reaper GUI).
--- Master track is excluded; it always returns -1.
---
--- args:
--- mediaTrack: reaper.MediaTrack
-local function getTrackIndex(mediaTrack) --> integer
-    local trackNumber = getTrackNumber(mediaTrack)
-    if trackNumber < 1 then
-        if trackNumber == -1 then
-            return trackNumber
-            -- TODO:
-            -- else
-            --     raise error -- track does not exist
-        end
-    else
-        return trackNumber - 1
-    end
-end
-
--- args:
--- mediaTrack: reaper.MediaTrack
-local function getTrackName(mediaTrack) --> string
-    ---@type boolean, string
-    local _, name = reaper.GetTrackName(mediaTrack)
-
-    -- TODO:raise error
-    -- if name == nil then
-    -- end
-
-    -- TODO:
-    -- if name == "MASTER" then
-    -- end
-
-    -- TODO: This will actually be "Track 0" if the first track,
-    -- "Track 1" if the second, etc. Need `N` to be an integer.
-    -- if name == "Track N" then
-    -- end
-
-    return name
-end
-
--- args:
--- mediaTrack: reaper.MediaTrack
-local function getParentTrack(mediaTrack) --> reaper.MediaTrack
-    local parent = reaper.GetParentTrack(mediaTrack)
-
-    -- TODO: raise error?
-    -- if parent == nil then
-    -- end
-
-    return parent
-end
-
--- args:
--- mediaTrack: reaper.MediaTrack
-local function getFolderDepth(mediaTrack) --> FolderDepth
-    -- args:
-    -- num: integer
-    local function getFolderDepthDesc(num)
-        if num == 0 then
-            return "normal"
-        elseif num == 1 then
-            return "parent"
-        else
-            -- NOTE:
-            -- At the moment, I'm ignoring nested values (-1, -2, etc), as
-            -- I'm not sure of the best way forward. The better move would probably
-            -- be a large and robust recursive function that maps the tree-
-            -- like hierarchy of the track relationships.
-            -- Will revisit in the future.
-            return nil
-        end
-    end
-
-    local num = reaper.GetMediaTrackInfo_Value(mediaTrack, "I_FOLDERDEPTH")
-    local desc = getFolderDepthDesc(num)
-    local folderDepth = FolderDepth.new(num, desc)
-    return folderDepth
-end
-
-
--------------------------------------------------------------------------------
--- Track
--------------------------------------------------------------------------------
--- Provides a wrapper for functions that take reaper.MediaTrack arguments.
-
+---Track provides a wrapper for reaper.MediaTrack.
+-- It provides methods to interact with the track, such as getting its name,
+-- index, and parent track, as well as methods to select or deselect the track.
+-- It also provides methods to get the track's folder depth and media items.
+---@class Track
+---@field project ReaProject -- The ReaProject that this Track belongs to.
+---@field _ MediaTrack -- The MediaTrack object that this Track wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
+---@field exists boolean -- Whether the track exists in the project.
+---@field isMaster boolean -- Whether the track is the master track.
 Track = {}
 
 -- TODO: Wrap function body in pcall() for error-handling, especially in the
 -- case that o is not passed or does not exist.
 --
--- Returns a wrapper for reaper.MediaTrack.
---
--- args:
--- o: table or nil
--- mediaTrack: reaper.MediaTrack
-function Track:new(o, project, mediaTrack) --> Track
-    o = o or {}
-    setmetatable(o, self)
+---Track.new returns a newly initialized Track object.
+---@param project    ReaProject
+---@param mediaTrack MediaTrack
+---@return Track
+function Track:new(project, mediaTrack) --> Track
+    local new = {}
+
+    setmetatable(new, self)
     self.__index = self
 
+    ---@type ReaProject
     self.project = project
+
+    ---@type MediaTrack
     self._ = mediaTrack
 
-    return o
+    ---@type boolean
+    self.exists = nil
+
+    ---@type boolean
+    self.isMaster = nil
+
+    -- self.exists = reaper.ValidatePtr(self._, "MediaTrack")
+
+    return new
 end
 
--- Returns the 1-based track number (as represented in the Reaper GUI).
+---Track.getTrackNumber returns the 1-based track number (as represented in the Reaper GUI).
+---@return integer
 function Track:getTrackNumber() --> integer
-    return getTrackNumber(self._)
+    local trackNumber = reaper.GetMediaTrackInfo_Value(self._, "IP_TRACKNUMBER")
+
+    if trackNumber == 0 then
+        self.exists = false
+    else
+        self.exists = true
+        if trackNumber == -1 then
+            self.isMaster = true
+        else
+            self.isMaster = false
+        end 
+    end
+
+    return trackNumber
 end
+
+-- TODO: Improve all methods below from here.
 
 -- Returns the 0-based track index (as represented in the Reaper GUI).
 -- Master track is excluded; it always returns -1.

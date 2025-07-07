@@ -2,16 +2,38 @@
 
 `grim` is a library that vastly speeds up ReapScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) for some extra functionality.
 
-Powers the [`rea`](https://github.com/rewgs/rea) script library.
+All values have type annotations according to the [`lua-language-server` specification](https://github.com/LuaLS/lua-language-server/wiki/Annotations).
 
-## Setup
+<!-- Powers the [`rea`](https://github.com/rewgs/rea) script library. -->
 
-<!-- TODO: Handle this in init.lua, which is currently in the _todo directory. -->
+<!-- ## setup -->
+<!-- Any ReaScript file that references this library needs to be able to import it from an absolute location that does not change from computer to computer. -->
+<!-- 1. Install the [Ultraschall API](https://github.com/Ultraschall/ultraschall-lua-api-for-reaper?tab=readme-ov-file#reapack) via ReaPack. -->
 
-1. Install the [Ultraschall API](https://github.com/Ultraschall/ultraschall-lua-api-for-reaper). This library heavily relies on it.
+## use
 
-<!-- FIXME:  -->
-<!-- `require()`-ing files and library such as LFS in Reaper throws an error: -->
-<!-- `error loading module 'lfs' from file '/usr/local/lib/lua/5.4/lfs.so': dlopen(/usr/local/lib/lua/5.4/lfs.so, 0x0006): symbol not found in flat namespace '_luaL_argerror'` -->
-<!-- Looks like there's an effort to fix this here: https://forums.cockos.com/showthread.php?t=224972 -->
-<!-- 2. Install LuaLFS: `luarocks install luafilesystem` -->
+It is highly recommended that you use VS Code along with [Antoine Balaine](https://www.linkedin.com/in/antoinebalaine/)'s excellent [`REAPER ReaScript`](https://marketplace.visualstudio.com/items?itemName=AntoineBalaine.reascript-docs) extension. `grim`'s type annotations for Reaper types are in accordance with this extension.
+
+## examples
+
+OOP-like architecture in Lua revolves entirely around the use of tables.
+
+Some good info:
+- https://stackoverflow.com/questions/4394303/how-to-make-namespace-in-lua
+- https://www.lua.org/pil/15.2.html
+
+```lua
+Some_Namespace = {}
+
+Some_Namespace.some_function = function()
+    reaper.ShowConsoleMsg("Running some_function() from namespace Some_Namespace!")
+end
+
+-- or
+
+Some_Namespace:another_function()
+    reaper.ShowConsoleMsg("Running another_function() from namespace Some_Namespace!")
+end
+
+return Some_Namespace
+```
