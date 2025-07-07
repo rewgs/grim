@@ -1,4 +1,4 @@
--- The entrypoint for the reaify library. 
+-- The entrypoint for the azrael library.
 
 local function fileExists(file) --> bool
     local f = io.open(file, "r")
@@ -23,7 +23,9 @@ local function loadUltraschall(ultraschall_path)
     end
 
     if not ultraschall or not ultraschall.GetApiVersion then
-        reaper.MB("Please install Ultraschall API, available via Reapack. Check online doc of the script for more infos.\nhttps://github.com/Ultraschall/ultraschall-lua-api-for-reaper", "Error", 0)
+        reaper.MB(
+        "Please install Ultraschall API, available via Reapack. Check online doc of the script for more infos.\nhttps://github.com/Ultraschall/ultraschall-lua-api-for-reaper",
+            "Error", 0)
         return
     end
 end
@@ -34,9 +36,10 @@ local function loadReaify(reaify)
     -- Might take some time with many folders/files.
     -- Optionally, you can filter for specific keywords(follows Lua's pattern-matching)
     -- Returns -1 in case of an error.
-    -- 
+    --
     -- Lua: integer found_dirs, array dirs_array, integer found_files, array files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(string path, optional string dir_filter, optional string dir_case_sensitive, optional string file_filter, optional string file_case_sensitive)
-    local num_found_dirs, dirs_array, num_found_files, files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(reaify.root)
+    local num_found_dirs, dirs_array, num_found_files, files_array = ultraschall.GetAllRecursiveFilesAndSubdirectories(
+    reaify.root)
 
     -- Imports all files found in the reaify directory.
     -- Never imports the name of the file that's calling it -- this allows modules to use the same
@@ -49,13 +52,13 @@ local function loadReaify(reaify)
 
             -- dofile(file)
 
-            -- FIXME: 
+            -- FIXME:
             -- Looking to track which files are problematic and then *only* `dofile()` the non-problematic ones.
             -- According to this, this should work: https://stackoverflow.com/questions/53343443/load-lua-file-and-catch-any-syntax-errors
             -- But it doesn't. Why?
             local success, err = loadfile(file)
             if not success then
-                table.insert({file, err})
+                table.insert({ file, err })
             end
         end
     end
@@ -91,13 +94,14 @@ local function main()
     -- Checking paths.
     if not path.this.file == path.reaify.initFile then
         local title = "Error loading Reaify!"
-        local msg = "Reaify is not properly installed! It should be located at: " .. path.reaify.initFile .. "; but is instead at: " ..  path.this.file .. "!"
+        local msg = "Reaify is not properly installed! It should be located at: " ..
+        path.reaify.initFile .. "; but is instead at: " .. path.this.file .. "!"
         _ = reaper.ShowMessageBox(msg, title, 0)
-    -- NOTE: Only present for debugging. Usually leave this commented out.
-    -- else
-    --     local title = "Successfully loaded Reaify!"
-    --     local msg = "Reaify was successfully found at: " .. path.this.file .. ". Enjoy!"
-    --     _ = reaper.ShowMessageBox(msg, title, 0)
+        -- NOTE: Only present for debugging. Usually leave this commented out.
+        -- else
+        --     local title = "Successfully loaded Reaify!"
+        --     local msg = "Reaify was successfully found at: " .. path.this.file .. ". Enjoy!"
+        --     _ = reaper.ShowMessageBox(msg, title, 0)
     end
 
     loadUltraschall(path.ultraschall)
@@ -118,8 +122,8 @@ main()
 -- 	_LICENSE        = [[
 -- 	]],
 
-	-- os     = require_relative("os"),     ---@module "lazy.os"
-	-- math   = require_relative("math"),   ---@module "lazy.math"
-	-- table  = require_relative("table"),  ---@module "lazy.table"
-	-- string = require_relative("string"), ---@module "lazy.string"
+-- os     = require_relative("os"),     ---@module "lazy.os"
+-- math   = require_relative("math"),   ---@module "lazy.math"
+-- table  = require_relative("table"),  ---@module "lazy.table"
+-- string = require_relative("string"), ---@module "lazy.string"
 -- }

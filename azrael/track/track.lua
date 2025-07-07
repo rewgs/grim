@@ -10,12 +10,11 @@ dofile(reaper.GetResourcePath() .. "UserPlugins/reaify/reaify/item/item.lua")
 
 FolderDepth = {}
 
----@param o table|nil
 ---@param num integer
 ---@param desc string
-function FolderDepth:new(o, num, desc) --> folderDepth
-    o = o or {}
-    setmetatable(o, self)
+function FolderDepth:new(num, desc) --> folderDepth
+    local new = {}
+    setmetatable(new, self)
     self.__index = self
 
     ---@type integer
@@ -24,7 +23,7 @@ function FolderDepth:new(o, num, desc) --> folderDepth
     ---@type string
     self.desc = desc
 
-    return o
+    return new
 end
 
 -------------------------------------------------------------------------------

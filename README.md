@@ -1,6 +1,6 @@
-# Reaify - Rewgs' Extension for the Reaper API. 
+# Azrael - extension for the ReaScript API
 
-Reaify is a library that provides a more object-oriented approach for interacting with both the Reaper Lua API, as well as the Ultraschall API. 
+Azrael is a library that provides a more object-oriented approach for interacting with both the Reaper ReaScript Lua API, as well as the Ultraschall API. 
 
 Powers the [`rea`](https://github.com/rewgs/rea) script library.
 
@@ -15,6 +15,6 @@ Powers the [`rea`](https://github.com/rewgs/rea) script library.
 <!-- 2. Install LuaLFS: `luarocks install luafilesystem` -->
 
 ## Notes
-- [`items`](./reaify/items/) is old. Use [`item`](./reaify/item/) instead.
-- [`projects`](./reaify/projects/) is old. Use [`project`](./reaify/project/) instead.
-- [`tracks`](./reaify/tracks/) is old. Use [`track`](./reaify/track/) instead.
+- [`items`](./azrael/items/) is old. Use [`item`](./azrael/item/) instead.
+- [`projects`](./azrael/projects/) is old. Use [`project`](./azrael/project/) instead.
+- [`tracks`](./azrael/tracks/) is old. Use [`track`](./azrael/track/) instead.
