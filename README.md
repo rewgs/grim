@@ -1,11 +1,13 @@
-# Azrael - extension for the ReaScript API
+# grim
 
-Azrael is a library that provides a more object-oriented approach for interacting with both the Reaper ReaScript Lua API, as well as the Ultraschall API. 
+`grim` is a library that vastly speeds up ReapScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) for some extra functionality.
 
 Powers the [`rea`](https://github.com/rewgs/rea) script library.
 
 ## Setup
+
 <!-- TODO: Handle this in init.lua -->
+
 1. Install the [Ultraschall API](https://github.com/Ultraschall/ultraschall-lua-api-for-reaper). This library heavily relies on it.
 
 <!-- FIXME:  -->
@@ -15,6 +17,7 @@ Powers the [`rea`](https://github.com/rewgs/rea) script library.
 <!-- 2. Install LuaLFS: `luarocks install luafilesystem` -->
 
 ## Notes
+
 - [`items`](./azrael/items/) is old. Use [`item`](./azrael/item/) instead.
 - [`projects`](./azrael/projects/) is old. Use [`project`](./azrael/project/) instead.
 - [`tracks`](./azrael/tracks/) is old. Use [`track`](./azrael/track/) instead.
