@@ -12,14 +12,23 @@ local utils = require('grim.track.utils')
 ---@field isMaster boolean -- Whether the track is the master track.
 Track = {}
 
--- TODO: Wrap function body in pcall() for error-handling, especially in the
--- case that o is not passed or does not exist.
---
 ---Track.new returns a newly initialized Track object.
 ---@param project    ReaProject
 ---@param mediaTrack MediaTrack
----@return Track
-function Track:new(project, mediaTrack) --> Track
+---@return Track | nil, string | nil
+function Track:New(project, mediaTrack)
+    if not project or not mediaTrack then
+        return nil, "Track:new() requires a ReaProject and a MediaTrack."
+    end
+
+    if not reaper.ValidatePtr(project, "ReaProject*") then
+        return nil, "Track:new() requires a valid ReaProject."
+    end 
+
+    if not reaper.ValidatePtr(mediaTrack, "MediaTrack*") then
+        return nil, "Track:new() requires a valid MediaTrack."
+    end
+
     local new = {}
 
     setmetatable(new, self)
@@ -37,14 +46,12 @@ function Track:new(project, mediaTrack) --> Track
     ---@type boolean
     self.isMaster = nil
 
-    -- self.exists = reaper.ValidatePtr(self._, "MediaTrack")
-
-    return new
+    return new, nil
 end
 
----Track.getTrackNumber returns the 1-based track number (as represented in the Reaper GUI).
+---Track.GetTrackNumber returns the 1-based track number (as represented in the Reaper GUI).
 ---@return integer
-function Track:getTrackNumber() --> integer
+function Track:GetTrackNumber()
     local trackNumber = reaper.GetMediaTrackInfo_Value(self._, "IP_TRACKNUMBER")
 
     if trackNumber == 0 then
@@ -55,59 +62,113 @@ function Track:getTrackNumber() --> integer
             self.isMaster = true
         else
             self.isMaster = false
-        end 
+        end
     end
 
     return trackNumber
 end
 
--- TODO: Improve all methods below from here.
-
--- Returns the 0-based track index (as represented in the Reaper GUI).
--- Master track is excluded; it always returns -1.
-function Track:getTrackIndex()
-    return getTrackIndex(self._)
+---Track.GetTrackIndex returns the 0-based track index (as represented in the Reaper GUI).
+---@return integer
+function Track:GetTrackIndex()
+    local trackNumber = self:GetTrackNumber()
+    return trackNumber - 1
 end
 
-function Track:getName() --> string
-    return getTrackName(self._)
-end
 
-function Track:getParentTrack() --> reaper.MediaTrack
-    return getParentTrack(self._)
-end
-
-function Track:getFolderDepth() --> FolderDepth
-    return getFolderDepth(self._)
-end
-
--- Returns the track's media items as Items.
-function Track:getItems() --> {}Item
-    local items = {}
-    local numMediaItems = reaper.CountTrackMediaItems(self._)
-    for i in iterators.Range(numMediaItems) do
-        local item = Item:new(self.project, self._)
-        table.insert(items, item)
+---Track.GetName returns the track's name. If the track has no name, it returns nil instead of an empty string.
+---@return string | nil
+function Track:GetName()
+    local _, name = reaper.GetTrackName(self._)
+    if name == "" then
+        return nil
+    else
+        return name
     end
 end
 
-function Track:isSelected() --> boolean
-    return reaper.IsTrackSelected(self._)
+---Track.GetParentTrack retrieves the parent MediaTrack of the current track, and then returns a newly-initialized Track object for it.
+-- If the track has no parent, it returns nil.
+---@return Track | nil
+function Track:GetParentTrack()
+    local parentTrack = reaper.GetParentTrack(self._)
+    if not parentTrack then
+        return nil
+    end
+
+    local parent, err = Track:New(self.project, parentTrack)
+    if parent == nil or err ~= nil then
+        -- TODO: encapsulate in pcall()
+        error("Track:GetParentTrack() failed to create Track: " .. (err or "unknown error"))
+    end
+    
+    parent.exists = true
+    parent.isMaster = false
+    return parent
 end
 
-function Track:select() --> nil
-    if not self:isSelected() then
+---Track.GetFolderDepth retrieves the numerical folder depth of the track, and then returns a newly-initialized FolderDepth object for it, 
+---which contains the number's corresponding descriptive string.
+---@return FolderDepth
+function Track:GetFolderDepth()
+    local folderDepthNum = reaper.GetMediaTrackInfo_Value(self._, "I_FOLDERDEPTH")
+    local folderDepth, err = folderDepth:New(folderDepthNum)
+    if folderDepth == nil or err ~= nil then
+        -- TODO: encapsulate in pcall()
+        error("Track:GetFolderDepth() failed to create FolderDepth: " .. (err or "unknown error"))
+    end
+    return folderDepth
+end
+
+-- TODO: This is a placeholder for the actual implementation. Depends on item.Item, which does not yet exist.
+---Track.GetItems returns a list of media items in the track.
+-- ---@return {}Item
+-- function Track:GetItems()
+-- end
+
+---Track.IsSelected returns whether the Track is selected in the Reaper GUI.
+---@return boolean
+function Track:IsSelected()
+    local isSelected = reaper.GetMediaTrackInfo_Value(self._, "I_SELECTED")
+    if isSelected == 1 then
+        return true
+    end
+    return false
+end
+
+-- TODO:
+function Track:Select() --> nil
+    if not self:IsSelected() then
         reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", true)
     end
 end
 
-function Track:deselect() --> nil
-    if self:isSelected() then
+-- TODO:
+function Track:Deselect() --> nil
+    if self:IsSelected() then
         reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", false)
     end
 end
 
+function Track:ToggleSelected() --> nil
+    if self:IsSelected() then
+        self:Deselect()
+    else
+        self:Select()
+    end
+end
+
+-- TODO: This is a placeholder for the actual implementation. Need to also check for child tracks.
+-- TODO: Maybe make this a field of Track instead?
+function Track:IsParent() --> boolean
+    local parentTrack = reaper.GetParentTrack(self._)
+    if not parentTrack then
+        return true
+    end
+    return false
+end
+
 -- TODO:
-function Track:getChildMediaTracks() --> {}reaper.MediaTrack
+function Track:GetChildTracks() --> {}Track
 end
 
