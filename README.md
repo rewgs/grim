@@ -16,7 +16,7 @@ It is highly recommended that you use VS Code along with [Antoine Balaine](https
 
 ## examples
 
-OOP-like architecture in Lua revolves entirely around the use of tables.
+OOP-like architecture in Lua revolves entirely around the use of tables and metatables.
 
 Some good info:
 - https://stackoverflow.com/questions/4394303/how-to-make-namespace-in-lua

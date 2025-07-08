@@ -6,9 +6,7 @@ local utils = require('grim.track.utils')
 -- index, and parent track, as well as methods to select or deselect the track.
 -- It also provides methods to get the track's folder depth and media items.
 ---@class Track
----
----The ReaProject that this Track belongs to.
----@field project ReaProject 
+---@field project ReaProject -- The ReaProject that this Track belongs to.
 ---@field _ MediaTrack -- The MediaTrack object that this Track wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
 ---@field exists boolean -- Whether the track exists in the project.
 ---@field isMaster boolean -- Whether the track is the master track.
@@ -122,10 +120,11 @@ function Track:GetFolderDepth()
 end
 
 -- TODO: This is a placeholder for the actual implementation. Depends on item.Item, which does not yet exist.
+--
 ---Track.GetItems returns a list of media items in the track.
--- ---@return {}Item
--- function Track:GetItems()
--- end
+---@return {}Item
+function Track:GetItems()
+end
 
 ---Track.IsSelected returns whether the Track is selected in the Reaper GUI.
 ---@return boolean
@@ -137,28 +136,38 @@ function Track:IsSelected()
     return false
 end
 
--- TODO: add return value? Error maybe?
 ---Track.Select selects the Track in the Reaper GUI.
--- If the Track is already selected, it does nothing.
--- If the Track does not exist, it does nothing.
--- If the Track is the master track, it does nothing.
----@return nil
+---If the Track is already selected, it does nothing.
+---If the Track does not exist, it does nothing.
+---If the Track is the master track, it does nothing.
+---If not successful, it returns an error message.
+---@return string | nil
 function Track:Select()
     if not self:IsSelected() then
-        _ = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 1)
+        -- This return value is a boolean, but I'm not sure what it means. I'm guessing it indicates success.
+        local success = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 1)
+        if not success then
+            return "Track:Select() failed to select track: " .. (self:GetName() or "unknown track")
+        end
     end
+    return nil
 end
 
--- TODO: add return value? Error maybe?
 ---Track.Deselect deselects the Track in the Reaper GUI.
--- If the Track is already deselected, it does nothing.
--- If the Track does not exist, it does nothing.
--- If the Track is the master track, it does nothing.
----@return nil
+---If the Track is already deselected, it does nothing.
+---If the Track does not exist, it does nothing.
+---If the Track is the master track, it does nothing.
+---If not successful, it returns an error message.
+---@return string | nil
 function Track:Deselect()
     if self:IsSelected() then
-        _ = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 0)
+        -- This return value is a boolean, but I'm not sure what it means. I'm guessing it indicates success.
+        local success = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 0)
+        if not success then
+            return "Track:Deselect() failed to deselect track: " .. (self:GetName() or "unknown track")
+        end
     end
+    return nil
 end
 
 ---Track.ToggleSelected toggles the selection state of the Track in the Reaper GUI.
