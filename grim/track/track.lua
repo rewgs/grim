@@ -1,4 +1,4 @@
-local folderDepth = require('grim.track.folder_depth')
+local folderDepth = require('grim.track.folderDepth')
 local utils = require('grim.track.utils')
 
 ---Track provides a wrapper for reaper.MediaTrack.
@@ -6,7 +6,9 @@ local utils = require('grim.track.utils')
 -- index, and parent track, as well as methods to select or deselect the track.
 -- It also provides methods to get the track's folder depth and media items.
 ---@class Track
----@field project ReaProject -- The ReaProject that this Track belongs to.
+---
+---The ReaProject that this Track belongs to.
+---@field project ReaProject 
 ---@field _ MediaTrack -- The MediaTrack object that this Track wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
 ---@field exists boolean -- Whether the track exists in the project.
 ---@field isMaster boolean -- Whether the track is the master track.
@@ -23,7 +25,7 @@ function Track:New(project, mediaTrack)
 
     if not reaper.ValidatePtr(project, "ReaProject*") then
         return nil, "Track:new() requires a valid ReaProject."
-    end 
+    end
 
     if not reaper.ValidatePtr(mediaTrack, "MediaTrack*") then
         return nil, "Track:new() requires a valid MediaTrack."
@@ -101,7 +103,6 @@ function Track:GetParentTrack()
         -- TODO: encapsulate in pcall()
         error("Track:GetParentTrack() failed to create Track: " .. (err or "unknown error"))
     end
-    
     parent.exists = true
     parent.isMaster = false
     return parent
