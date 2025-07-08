@@ -64,3 +64,7 @@ function FolderDepth:New(num)
 
     return new, nil
 end
+
+return {
+    FolderDepth = FolderDepth,
+}

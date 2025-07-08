@@ -111,13 +111,13 @@ end
 ---which contains the number's corresponding descriptive string.
 ---@return FolderDepth
 function Track:GetFolderDepth()
-    local folderDepthNum = reaper.GetMediaTrackInfo_Value(self._, "I_FOLDERDEPTH")
-    local folderDepth, err = folderDepth:New(folderDepthNum)
-    if folderDepth == nil or err ~= nil then
+    local num = reaper.GetMediaTrackInfo_Value(self._, "I_FOLDERDEPTH")
+    local f, err = folderDepth:New(num)
+    if f == nil or err ~= nil then
         -- TODO: encapsulate in pcall()
         error("Track:GetFolderDepth() failed to create FolderDepth: " .. (err or "unknown error"))
     end
-    return folderDepth
+    return f
 end
 
 -- TODO: This is a placeholder for the actual implementation. Depends on item.Item, which does not yet exist.
@@ -172,3 +172,16 @@ end
 function Track:GetChildTracks() --> {}Track
 end
 
+-- TODO:
+---track.GetByName retrieves a Track by its name in the current project.
+-- If multiple tracks have the same name, it returns all of them in a table.
+-- If no track with the given name is found, it returns nil.
+-- ---@param name string
+-- ---@return Track | {}Track | nil
+-- function GetByName(name)
+-- end
+
+return {
+    Track = Track,
+    -- GetByName = GetByName,
+}
