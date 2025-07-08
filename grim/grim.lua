@@ -11,7 +11,7 @@ for name, module in pairs(modules) do
     if Grim[name] == nil then
         Grim[name] = module
     else
-        error("Azrael already has a module named '" .. name .. "'")
+        error("Grim already has a module named '" .. name .. "'")
     end
 end
 
