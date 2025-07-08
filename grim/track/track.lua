@@ -2,9 +2,9 @@ local folderDepth = require('grim.track.folderDepth')
 local utils = require('grim.track.utils')
 
 ---Track provides a wrapper for the reaper MediaTrack type.
--- It provides methods to interact with the track, such as getting its name,
--- index, and parent track, as well as methods to select or deselect the track.
--- It also provides methods to get the track's folder depth and media items.
+---It provides methods to interact with the track, such as getting its name,
+---index, and parent track, as well as methods to select or deselect the track.
+---It also provides methods to get the track's folder depth and media items.
 ---@class Track
 ---@field project ReaProject -- The ReaProject that this Track belongs to.
 ---@field _ MediaTrack -- The MediaTrack object that this Track wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
@@ -88,7 +88,7 @@ function Track:GetName()
 end
 
 ---Track.GetParentTrack retrieves the parent MediaTrack of the current track, and then returns a newly-initialized Track object for it.
--- If the track has no parent, it returns nil.
+---If the track has no parent, it returns nil.
 ---@return Track | nil
 function Track:GetParentTrack()
     local parentTrack = reaper.GetParentTrack(self._)
@@ -171,10 +171,10 @@ function Track:Deselect()
 end
 
 ---Track.ToggleSelected toggles the selection state of the Track in the Reaper GUI.
--- If the Track is selected, it deselects it.
--- If the Track is not selected, it selects it.
--- If the Track does not exist, it does nothing.
--- If the Track is the master track, it does nothing.
+---If the Track is selected, it deselects it.
+---If the Track is not selected, it selects it.
+---If the Track does not exist, it does nothing.
+---If the Track is the master track, it does nothing.
 ---@return nil
 function Track:ToggleSelected()
     if self:IsSelected() then
