@@ -1,7 +1,7 @@
 local folderDepth = require('grim.track.folderDepth')
 local utils = require('grim.track.utils')
 
----Track provides a wrapper for reaper.MediaTrack.
+---Track provides a wrapper for the reaper MediaTrack type.
 -- It provides methods to interact with the track, such as getting its name,
 -- index, and parent track, as well as methods to select or deselect the track.
 -- It also provides methods to get the track's folder depth and media items.
@@ -15,15 +15,15 @@ local utils = require('grim.track.utils')
 Track = {}
 
 ---Track.new returns a newly initialized Track object.
----@param project    ReaProject
+---@param reaProject    ReaProject
 ---@param mediaTrack MediaTrack
 ---@return Track | nil, string | nil
-function Track:New(project, mediaTrack)
-    if not project or not mediaTrack then
+function Track:New(reaProject, mediaTrack)
+    if not reaProject or not mediaTrack then
         return nil, "Track:new() requires a ReaProject and a MediaTrack."
     end
 
-    if not reaper.ValidatePtr(project, "ReaProject*") then
+    if not reaper.ValidatePtr(reaProject, "ReaProject*") then
         return nil, "Track:new() requires a valid ReaProject."
     end
 
@@ -37,7 +37,7 @@ function Track:New(project, mediaTrack)
     self.__index = self
 
     ---@type ReaProject
-    self.project = project
+    self.project = reaProject
 
     ---@type MediaTrack
     self._ = mediaTrack
@@ -137,21 +137,37 @@ function Track:IsSelected()
     return false
 end
 
--- TODO:
-function Track:Select() --> nil
+-- TODO: add return value? Error maybe?
+---Track.Select selects the Track in the Reaper GUI.
+-- If the Track is already selected, it does nothing.
+-- If the Track does not exist, it does nothing.
+-- If the Track is the master track, it does nothing.
+---@return nil
+function Track:Select()
     if not self:IsSelected() then
-        reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", true)
+        _ = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 1)
     end
 end
 
--- TODO:
-function Track:Deselect() --> nil
+-- TODO: add return value? Error maybe?
+---Track.Deselect deselects the Track in the Reaper GUI.
+-- If the Track is already deselected, it does nothing.
+-- If the Track does not exist, it does nothing.
+-- If the Track is the master track, it does nothing.
+---@return nil
+function Track:Deselect()
     if self:IsSelected() then
-        reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", false)
+        _ = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 0)
     end
 end
 
-function Track:ToggleSelected() --> nil
+---Track.ToggleSelected toggles the selection state of the Track in the Reaper GUI.
+-- If the Track is selected, it deselects it.
+-- If the Track is not selected, it selects it.
+-- If the Track does not exist, it does nothing.
+-- If the Track is the master track, it does nothing.
+---@return nil
+function Track:ToggleSelected()
     if self:IsSelected() then
         self:Deselect()
     else
@@ -169,20 +185,22 @@ function Track:IsParent() --> boolean
     return false
 end
 
--- TODO:
+-- TODO: In progress
 function Track:GetChildTracks() --> {}Track
+    local childTracks = {}
+    local numTracks = reaper.CountTracks(self.project)
+
+    for i = 0, numTracks - 1 do
+        local track = reaper.GetTrack(self.project, i)
+        if track and reaper.GetParentTrack(track) == self._ then
+            local child, err = Track:New(self.project, track)
+            if child == nil or err ~= nil then
+            end
+        end
+    end
 end
 
--- TODO:
----track.GetByName retrieves a Track by its name in the current project.
--- If multiple tracks have the same name, it returns all of them in a table.
--- If no track with the given name is found, it returns nil.
--- ---@param name string
--- ---@return Track | {}Track | nil
--- function GetByName(name)
--- end
 
 return {
     Track = Track,
-    -- GetByName = GetByName,
 }
