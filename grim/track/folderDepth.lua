@@ -1,15 +1,15 @@
 ---FolderDepth defines a common interface for folder depth objects.
----The ReaScript API defines several folder depth values: 
+---The ReaScript API defines several folder depth values:
 ---I_FOLDERDEPTH : int * : folder depth change, 0=normal, 1=track is a folder parent, -1=track is the last in the innermost folder, -2=track is the last in the innermost and next-innermost folders, etc
 ---This class makes the folder depth values more readable by providing a description for each integer value.
 ---@class FolderDepth
 ---@field num integer
 ---@field desc string | nil
-FolderDepth = {}
+local FolderDepth = {}
 
 local desc = {
-    { num = 0, desc = "Normal track" },
-    { num = 1, desc = "Folder parent track" },
+    { num = 0,  desc = "Normal track" },
+    { num = 1,  desc = "Folder parent track" },
     { num = -1, desc = "Last track in innermost folder" },
     { num = -2, desc = "Last track in innermost and next-innermost folders" },
     -- { num = -3, desc = "Last track in innermost and next-innermost and next-next-innermost folders" },

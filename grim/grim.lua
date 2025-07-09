@@ -1,8 +1,10 @@
 local modules = {
+    item = require('grim.item'),
+    project = require('grim.project'),
     track = require('grim.track'),
 }
 
-Grim = {}
+local grim = {}
 
 -- Grim is a table that serves as a namespace for the Grim library.   
 -- It contains various modules that provide functionality for working with Reaper's API.
@@ -15,4 +17,6 @@ for name, module in pairs(modules) do
     end
 end
 
-return Grim
+return {
+    grim = grim,
+}
