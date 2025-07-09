@@ -12,28 +12,4 @@ All values have type annotations according to the [`lua-language-server` specifi
 
 ## use
 
-It is highly recommended that you use VS Code along with [Antoine Balaine](https://www.linkedin.com/in/antoinebalaine/)'s excellent [`REAPER ReaScript`](https://marketplace.visualstudio.com/items?itemName=AntoineBalaine.reascript-docs) extension. `grim`'s type annotations for Reaper types are in accordance with this extension.
-
-## examples
-
-OOP-like architecture in Lua revolves entirely around the use of tables and metatables.
-
-Some good info:
-- https://stackoverflow.com/questions/4394303/how-to-make-namespace-in-lua
-- https://www.lua.org/pil/15.2.html
-
-```lua
-Some_Namespace = {}
-
-Some_Namespace.some_function = function()
-    reaper.ShowConsoleMsg("Running some_function() from namespace Some_Namespace!")
-end
-
--- or
-
-Some_Namespace:another_function()
-    reaper.ShowConsoleMsg("Running another_function() from namespace Some_Namespace!")
-end
-
-return Some_Namespace
-```
+It is highly recommended that you use VS Code along with [Antoine Balaine](https://www.linkedin.com/in/antoinebalaine/)'s excellent [`REAPER ReaScript`](https://marketplace.visualstudio.com/items?itemName=AntoineBalaine.reascript-docs) extension, as `grim`'s type annotations for Reaper's types are in accordance with this extension.
