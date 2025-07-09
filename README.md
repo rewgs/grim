@@ -1,8 +1,10 @@
 # grim
 
-`grim` is a library that significantly speeds up ReaScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) for some extra functionality.
+`grim` is a library that significantly speeds up ReaScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). It wraps each of ReaScript's data types (`ReaProject`, `MediaTrack`, `MediaItem`, etc) with a [class](https://www.lua.org/pil/16.1.html) (`Project`, `Track`, and `Item`, respectively); each class provides a number of useful methods, and each class's namespace provides some utility functions related to it.
 
-All values have type annotations according to the [`lua-language-server` specification](https://github.com/LuaLS/lua-language-server/wiki/Annotations).
+Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) render table-related functionality.
+
+All symbols have type annotations according to the [`lua-language-server` specification](https://github.com/LuaLS/lua-language-server/wiki/Annotations).
 
 <!-- Powers the [`rea`](https://github.com/rewgs/rea) script library. -->
 
@@ -23,7 +25,8 @@ local function getTrackByName(query)
     for i = 0, numTracks - 1 do
         local track = reaper.GetTrack(0, i)
         local _, name = reaper.GetTrackName(track)
-        if name == query then
+        -- Excludes tracks with empty names
+        if name == query and name ~= ("Track " .. i + 1) then
             table.insert(matches, track)
         end
     end
