@@ -2,6 +2,8 @@
 
 `grim` is a library that significantly speeds up ReaScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). It wraps each of ReaScript's data types (`ReaProject`, `MediaTrack`, `MediaItem`, etc) with a [class](https://www.lua.org/pil/16.1.html) (`Project`, `Track`, and `Item`, respectively); each class provides a number of useful methods, and each class's namespace provides some utility functions related to it.
 
+There are several other classes/types original to this library which are intended to increase quality-of-life, such as [`track.FolderDepth`](./grim/track/folderDepth.lua).
+
 Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) render table-related functionality.
 
 All symbols have type annotations according to the [`lua-language-server` specification](https://github.com/LuaLS/lua-language-server/wiki/Annotations).
@@ -38,7 +40,7 @@ local track = getTrackByName("some track")
 And this is how one achieves the same thing with `grim`:
 
 ```lua
-grim = require('grim')
+require('grim')
 project = Project.New()
 track = project.GetTrackByName("some track") -- This returns the first match
 -- Also available is `project.GetTracksByName()` (notice that "Tracks" is plural), which returns a table of all tracks named the query. 

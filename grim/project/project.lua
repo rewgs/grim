@@ -1,8 +1,8 @@
-local track = require('grim.track')
+require('grim.track')
 
 ---Project provides a wrapper for the reaper ReaProject type.
 ---@class Project
----@field _ ReaProject -- The ReaProject that this class wraps.
+---@field _ ReaProject -- The ReaProject that this class wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
 local Project = {}
 
 ---Project.New returns a newly initialized Project object.

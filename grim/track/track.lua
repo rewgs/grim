@@ -1,5 +1,5 @@
-local folderDepth = require('grim.track.folderDepth')
-local item = require('grim.item.item')
+require('grim.track.folderDepth')
+require('grim.item.item')
 
 ---Track provides a wrapper for the reaper MediaTrack type.
 ---It provides methods to interact with the track, such as getting its name,
