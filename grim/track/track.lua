@@ -1,5 +1,4 @@
 local folderDepth = require('grim.track.folderDepth')
-local utils = require('grim.track.utils')
 
 ---Track provides a wrapper for the reaper MediaTrack type.
 ---It provides methods to interact with the track, such as getting its name,
@@ -10,23 +9,25 @@ local utils = require('grim.track.utils')
 ---@field _ MediaTrack -- The MediaTrack object that this Track wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
 ---@field exists boolean -- Whether the track exists in the project.
 ---@field isMaster boolean -- Whether the track is the master track.
-Track = {}
+---@field isParent boolean -- Whether the track has child tracks. This is set to true if the track has at least one child track, and false otherwise.
+---@field parent Track | nil -- The parent Track of this Track, if it exists. If the track has no parent, this is nil.
+local Track = {}
 
----Track.new returns a newly initialized Track object.
----@param reaProject    ReaProject
+---Track.New returns a newly initialized Track object.
+---@param reaProject ReaProject
 ---@param mediaTrack MediaTrack
 ---@return Track | nil, string | nil
 function Track:New(reaProject, mediaTrack)
     if not reaProject or not mediaTrack then
-        return nil, "Track:new() requires a ReaProject and a MediaTrack."
+        return nil, "Track:New() requires a ReaProject and a MediaTrack."
     end
 
     if not reaper.ValidatePtr(reaProject, "ReaProject*") then
-        return nil, "Track:new() requires a valid ReaProject."
+        return nil, "Track:New() requires a valid ReaProject."
     end
 
     if not reaper.ValidatePtr(mediaTrack, "MediaTrack*") then
-        return nil, "Track:new() requires a valid MediaTrack."
+        return nil, "Track:New() requires a valid MediaTrack."
     end
 
     local new = {}
@@ -75,7 +76,6 @@ function Track:GetTrackIndex()
     return trackNumber - 1
 end
 
-
 ---Track.GetName returns the track's name. If the track has no name, it returns nil instead of an empty string.
 ---@return string | nil
 function Track:GetName()
@@ -106,7 +106,7 @@ function Track:GetParentTrack()
     return parent
 end
 
----Track.GetFolderDepth retrieves the numerical folder depth of the track, and then returns a newly-initialized FolderDepth object for it, 
+---Track.GetFolderDepth retrieves the numerical folder depth of the track, and then returns a newly-initialized FolderDepth object for it,
 ---which contains the number's corresponding descriptive string.
 ---@return FolderDepth
 function Track:GetFolderDepth()
@@ -119,11 +119,31 @@ function Track:GetFolderDepth()
     return f
 end
 
--- TODO: This is a placeholder for the actual implementation. Depends on item.Item, which does not yet exist.
---
 ---Track.GetItems returns a list of media items in the track.
----@return {}Item
+---Returns nil if the track has no media items.
+---@return {}Item | nil
 function Track:GetItems()
+    local items = {}
+
+    local numMediaItems = reaper.CountTrackMediaItems(self._)
+
+    if numMediaItems == 0 then
+        return nil
+    end
+
+    for i = 0, numMediaItems - 1 do
+        local mediaItem = reaper.GetTrackMediaItem(self._, i)
+        if mediaItem then
+            local item, err = Item:New(self.project, mediaItem)
+            if item == nil or err ~= nil then
+                error("Track:GetItems() failed to create Item: " .. (err or "unknown error"))
+            else
+                table.insert(items, item)
+            end
+        end
+    end
+
+    return items
 end
 
 ---Track.IsSelected returns whether the Track is selected in the Reaper GUI.
@@ -184,18 +204,10 @@ function Track:ToggleSelected()
     end
 end
 
--- TODO: This is a placeholder for the actual implementation. Need to also check for child tracks.
--- TODO: Maybe make this a field of Track instead?
-function Track:IsParent() --> boolean
-    local parentTrack = reaper.GetParentTrack(self._)
-    if not parentTrack then
-        return true
-    end
-    return false
-end
-
--- TODO: In progress
-function Track:GetChildTracks() --> {}Track
+---Track.GetChildTracks returns a table of child Tracks of the current Track.
+---Returns nil if the track has no child Tracks.
+---@return {}Track | nil
+function Track:GetChildTracks()
     local childTracks = {}
     local numTracks = reaper.CountTracks(self.project)
 
@@ -204,11 +216,23 @@ function Track:GetChildTracks() --> {}Track
         if track and reaper.GetParentTrack(track) == self._ then
             local child, err = Track:New(self.project, track)
             if child == nil or err ~= nil then
+                error("Track:GetChildTracks() failed to create Track: " .. (err or "unknown error"))
+            else
+                child.exists = true
+                child.isMaster = false
+                child.parent = self
+                table.insert(childTracks, child)
             end
         end
     end
-end
 
+    if #childTracks == 0 then
+        return nil
+    end
+
+    Track.IsParent = true
+    return childTracks
+end
 
 return {
     Track = Track,

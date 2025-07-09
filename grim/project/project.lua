@@ -1,10 +1,9 @@
--- local folderDepth = require('grim.track.folder_depth')
 local track = require('grim.track')
 
 ---Project provides a wrapper for the reaper ReaProject type.
 ---@class Project
 ---@field _ ReaProject -- The ReaProject that this class wraps.
-Project = {}
+local Project = {}
 
 ---Project.New returns a newly initialized Project object.
 ---@param reaProject ReaProject
@@ -28,7 +27,7 @@ end
 ---Project.GetTrackByName retrieves a Track by its name in the current project.
 ---Retuns a table of Tracks, even if only one match is found.
 ---If no track with the given name is found, it returns nil.
----@param name string 
+---@param name string
 ---@return {}Track | nil
 function Project:GetTracksByName(name)
     local tracks = {}
