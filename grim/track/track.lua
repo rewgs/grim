@@ -1,5 +1,5 @@
-require('grim.track.folderDepth')
-require('grim.item.item')
+local folderDepth = require("grim.track.folderDepth")
+local item = require("grim.item.item")
 
 ---Track provides a wrapper for the reaper MediaTrack type.
 ---It provides methods to interact with the track, such as getting its name,
@@ -19,142 +19,142 @@ local Track = {}
 ---@param mediaTrack MediaTrack
 ---@return Track | nil, string | nil
 function Track:New(reaProject, mediaTrack)
-    if not reaProject or not mediaTrack then
-        return nil, "Track:New() requires a ReaProject and a MediaTrack."
-    end
+	if not reaProject or not mediaTrack then
+		return nil, "Track:New() requires a ReaProject and a MediaTrack."
+	end
 
-    if not reaper.ValidatePtr(reaProject, "ReaProject*") then
-        return nil, "Track:New() requires a valid ReaProject."
-    end
+	if not reaper.ValidatePtr(reaProject, "ReaProject*") then
+		return nil, "Track:New() requires a valid ReaProject."
+	end
 
-    if not reaper.ValidatePtr(mediaTrack, "MediaTrack*") then
-        return nil, "Track:New() requires a valid MediaTrack."
-    end
+	if not reaper.ValidatePtr(mediaTrack, "MediaTrack*") then
+		return nil, "Track:New() requires a valid MediaTrack."
+	end
 
-    local new = {}
+	local new = {}
 
-    setmetatable(new, self)
-    self.__index = self
+	setmetatable(new, self)
+	self.__index = self
 
-    ---@type ReaProject
-    self.project = reaProject
+	---@type ReaProject
+	self.project = reaProject
 
-    ---@type MediaTrack
-    self._ = mediaTrack
+	---@type MediaTrack
+	self._ = mediaTrack
 
-    ---@type boolean
-    self.exists = nil
+	---@type boolean
+	self.exists = nil
 
-    ---@type boolean
-    self.isMaster = nil
+	---@type boolean
+	self.isMaster = nil
 
-    return new, nil
+	return new, nil
 end
 
 ---Track.GetTrackNumber returns the 1-based track number (as represented in the Reaper GUI).
 ---@return integer
 function Track:GetTrackNumber()
-    local trackNumber = reaper.GetMediaTrackInfo_Value(self._, "IP_TRACKNUMBER")
+	local trackNumber = reaper.GetMediaTrackInfo_Value(self._, "IP_TRACKNUMBER")
 
-    if trackNumber == 0 then
-        self.exists = false
-    else
-        self.exists = true
-        if trackNumber == -1 then
-            self.isMaster = true
-        else
-            self.isMaster = false
-        end
-    end
+	if trackNumber == 0 then
+		self.exists = false
+	else
+		self.exists = true
+		if trackNumber == -1 then
+			self.isMaster = true
+		else
+			self.isMaster = false
+		end
+	end
 
-    return trackNumber
+	return trackNumber
 end
 
 ---Track.GetTrackIndex returns the 0-based track index (as represented in the Reaper GUI).
 ---@return integer
 function Track:GetTrackIndex()
-    local trackNumber = self:GetTrackNumber()
-    return trackNumber - 1
+	local trackNumber = self:GetTrackNumber()
+	return trackNumber - 1
 end
 
 ---Track.GetName returns the track's name. If the track has no name, it returns nil instead of an empty string.
 ---@return string | nil
 function Track:GetName()
-    local _, name = reaper.GetTrackName(self._)
-    if name == "" then
-        return nil
-    else
-        return name
-    end
+	local _, name = reaper.GetTrackName(self._)
+	if name == "" then
+		return nil
+	else
+		return name
+	end
 end
 
 ---Track.GetParentTrack retrieves the parent MediaTrack of the current track, and then returns a newly-initialized Track object for it.
 ---If the track has no parent, it returns nil.
 ---@return Track | nil
 function Track:GetParentTrack()
-    local parentTrack = reaper.GetParentTrack(self._)
-    if not parentTrack then
-        return nil
-    end
+	local parentTrack = reaper.GetParentTrack(self._)
+	if not parentTrack then
+		return nil
+	end
 
-    local parent, err = Track:New(self.project, parentTrack)
-    if parent == nil or err ~= nil then
-        -- TODO: encapsulate in pcall()
-        error("Track:GetParentTrack() failed to create Track: " .. (err or "unknown error"))
-    end
-    parent.exists = true
-    parent.isMaster = false
-    return parent
+	local parent, err = Track:New(self.project, parentTrack)
+	if parent == nil or err ~= nil then
+		-- TODO: encapsulate in pcall()
+		error("Track:GetParentTrack() failed to create Track: " .. (err or "unknown error"))
+	end
+	parent.exists = true
+	parent.isMaster = false
+	return parent
 end
 
 ---Track.GetFolderDepth retrieves the numerical folder depth of the track, and then returns a newly-initialized FolderDepth object for it,
 ---which contains the number's corresponding descriptive string.
 ---@return FolderDepth
 function Track:GetFolderDepth()
-    local num = reaper.GetMediaTrackInfo_Value(self._, "I_FOLDERDEPTH")
-    local f, err = folderDepth:New(num)
-    if f == nil or err ~= nil then
-        -- TODO: encapsulate in pcall()
-        error("Track:GetFolderDepth() failed to create FolderDepth: " .. (err or "unknown error"))
-    end
-    return f
+	local num = reaper.GetMediaTrackInfo_Value(self._, "I_FOLDERDEPTH")
+	local newFolderDepth, err = folderDepth.FolderDepth:New(num)
+	if newFolderDepth == nil or err ~= nil then
+		-- TODO: encapsulate in pcall()
+		error("Track:GetFolderDepth() failed to create FolderDepth: " .. (err or "unknown error"))
+	end
+	return newFolderDepth
 end
 
 ---Track.GetItems returns a list of media items in the track.
 ---Returns nil if the track has no media items.
----@return {}Item | nil
+---@return {}gItem.Item | nil
 function Track:GetItems()
-    local items = {}
+	local items = {}
 
-    local numMediaItems = reaper.CountTrackMediaItems(self._)
+	local numMediaItems = reaper.CountTrackMediaItems(self._)
 
-    if numMediaItems == 0 then
-        return nil
-    end
+	if numMediaItems == 0 then
+		return nil
+	end
 
-    for i = 0, numMediaItems - 1 do
-        local mediaItem = reaper.GetTrackMediaItem(self._, i)
-        if mediaItem then
-            local item, err = Item:New(self.project, mediaItem)
-            if item == nil or err ~= nil then
-                error("Track:GetItems() failed to create Item: " .. (err or "unknown error"))
-            else
-                table.insert(items, item)
-            end
-        end
-    end
+	for i = 0, numMediaItems - 1 do
+		local mediaItem = reaper.GetTrackMediaItem(self._, i)
+		if mediaItem then
+			local newItem, err = item.Item:New(self.project, mediaItem)
+			if newItem == nil or err ~= nil then
+				error("Track:GetItems() failed to create Item: " .. (err or "unknown error"))
+			else
+				table.insert(items, newItem)
+			end
+		end
+	end
 
-    return items
+	return items
 end
 
 ---Track.IsSelected returns whether the Track is selected in the Reaper GUI.
 ---@return boolean
 function Track:IsSelected()
-    local isSelected = reaper.GetMediaTrackInfo_Value(self._, "I_SELECTED")
-    if isSelected == 1 then
-        return true
-    end
-    return false
+	local isSelected = reaper.GetMediaTrackInfo_Value(self._, "I_SELECTED")
+	if isSelected == 1 then
+		return true
+	end
+	return false
 end
 
 ---Track.Select selects the Track in the Reaper GUI.
@@ -164,14 +164,14 @@ end
 ---If not successful, it returns an error message.
 ---@return string | nil
 function Track:Select()
-    if not self:IsSelected() then
-        -- This return value is a boolean, but I'm not sure what it means. I'm guessing it indicates success.
-        local success = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 1)
-        if not success then
-            return "Track:Select() failed to select track: " .. (self:GetName() or "unknown track")
-        end
-    end
-    return nil
+	if not self:IsSelected() then
+		-- This return value is a boolean, but I'm not sure what it means. I'm guessing it indicates success.
+		local success = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 1)
+		if not success then
+			return "Track:Select() failed to select track: " .. (self:GetName() or "unknown track")
+		end
+	end
+	return nil
 end
 
 ---Track.Deselect deselects the Track in the Reaper GUI.
@@ -181,14 +181,14 @@ end
 ---If not successful, it returns an error message.
 ---@return string | nil
 function Track:Deselect()
-    if self:IsSelected() then
-        -- This return value is a boolean, but I'm not sure what it means. I'm guessing it indicates success.
-        local success = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 0)
-        if not success then
-            return "Track:Deselect() failed to deselect track: " .. (self:GetName() or "unknown track")
-        end
-    end
-    return nil
+	if self:IsSelected() then
+		-- This return value is a boolean, but I'm not sure what it means. I'm guessing it indicates success.
+		local success = reaper.SetMediaTrackInfo_Value(self._, "I_SELECTED", 0)
+		if not success then
+			return "Track:Deselect() failed to deselect track: " .. (self:GetName() or "unknown track")
+		end
+	end
+	return nil
 end
 
 ---Track.ToggleSelected toggles the selection state of the Track in the Reaper GUI.
@@ -198,43 +198,43 @@ end
 ---If the Track is the master track, it does nothing.
 ---@return nil
 function Track:ToggleSelected()
-    if self:IsSelected() then
-        self:Deselect()
-    else
-        self:Select()
-    end
+	if self:IsSelected() then
+		self:Deselect()
+	else
+		self:Select()
+	end
 end
 
 ---Track.GetChildTracks returns a table of child Tracks of the current Track.
 ---Returns nil if the track has no child Tracks.
 ---@return {}Track | nil
 function Track:GetChildTracks()
-    local childTracks = {}
-    local numTracks = reaper.CountTracks(self.project)
+	local childTracks = {}
+	local numTracks = reaper.CountTracks(self.project)
 
-    for i = 0, numTracks - 1 do
-        local track = reaper.GetTrack(self.project, i)
-        if track and reaper.GetParentTrack(track) == self._ then
-            local child, err = Track:New(self.project, track)
-            if child == nil or err ~= nil then
-                error("Track:GetChildTracks() failed to create Track: " .. (err or "unknown error"))
-            else
-                child.exists = true
-                child.isMaster = false
-                child.parent = self
-                table.insert(childTracks, child)
-            end
-        end
-    end
+	for i = 0, numTracks - 1 do
+		local track = reaper.GetTrack(self.project, i)
+		if track and reaper.GetParentTrack(track) == self._ then
+			local child, err = Track:New(self.project, track)
+			if child == nil or err ~= nil then
+				error("Track:GetChildTracks() failed to create Track: " .. (err or "unknown error"))
+			else
+				child.exists = true
+				child.isMaster = false
+				child.parent = self
+				table.insert(childTracks, child)
+			end
+		end
+	end
 
-    if #childTracks == 0 then
-        return nil
-    end
+	if #childTracks == 0 then
+		return nil
+	end
 
-    Track.IsParent = true
-    return childTracks
+	Track.IsParent = true
+	return childTracks
 end
 
 return {
-    Track = Track,
+	Track = Track,
 }

@@ -13,27 +13,27 @@ local Item = {}
 ---@param  mediaItem MediaItem
 ---@return Item | nil, string | nil
 function Item:New(reaProject, mediaItem)
-    if not reaProject or not mediaItem then
-        return nil, "Item:New() requires a ReaProject and a MediaItem."
-    end
+	if not reaProject or not mediaItem then
+		return nil, "Item:New() requires a ReaProject and a MediaItem."
+	end
 
-    if not reaper.ValidatePtr(reaProject, "ReaProject*") then
-        return nil, "Item:New() requires a valid ReaProject."
-    end
+	if not reaper.ValidatePtr(reaProject, "ReaProject*") then
+		return nil, "Item:New() requires a valid ReaProject."
+	end
 
-    if not reaper.ValidatePtr(mediaItem, "MediaItem*") then
-        return nil, "Item:New() requires a valid MediaItem."
-    end
+	if not reaper.ValidatePtr(mediaItem, "MediaItem*") then
+		return nil, "Item:New() requires a valid MediaItem."
+	end
 
-    local new = {}
+	local new = {}
 
-    setmetatable(new, self)
-    self.__index = self
+	setmetatable(new, self)
+	self.__index = self
 
-    ---@type MediaItem
-    self._ = mediaItem
+	---@type MediaItem
+	self._ = mediaItem
 
-    return new, nil
+	return new, nil
 end
 
 -- TODO:
@@ -49,5 +49,6 @@ function Item:GetSourceMedia() --> Source (this will be a wrapper for reaper.PCM
 end
 
 return {
-    Item = Item,
+	Item = Item,
 }
+
