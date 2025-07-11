@@ -17,7 +17,7 @@ All symbols have type annotations according to the [`lua-language-server` specif
 > [!WARNING]
 >
 > **grim is a work in progress
-> and does not have a `1.0` release yet.**_
+> and does not have a `1.0` release yet.**
 
 ## why?
 
