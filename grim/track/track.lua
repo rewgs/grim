@@ -1,3 +1,5 @@
+---@description This module provides a wrapper for the MediaTrack type in REAPER.
+
 local folderDepth = require("grim.track.folderDepth")
 local item = require("grim.item.item")
 

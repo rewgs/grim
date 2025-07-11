@@ -1,13 +1,18 @@
+---@description This module provides a wrapper for the ReaProject type in REAPER.
+
 local track = require("grim.track.track")
 
 ---Project provides a wrapper for the reaper ReaProject type.
 ---@class Project
 ---@field _ ReaProject -- The ReaProject that this class wraps. As it is intended to be ignored/not intended to be modified directly, it is simply called _.
+---@field Name string -- The name of the project.
+---@field RecordingPath string -- The recording path of the project.
+---@field Path string -- The file path of the .rpp file.
 local Project = {}
 
 ---Project.New returns a newly initialized Project object.
 ---@param reaProject ReaProject
----@return Project | nil, string | nil
+---@return Project | nil, nil | string
 function Project:New(reaProject)
 	if not reaper.ValidatePtr(reaProject, "ReaProject*") then
 		return nil, "Project:New() requires a valid ReaProject."
@@ -21,7 +26,32 @@ function Project:New(reaProject)
 	---@type ReaProject
 	self._ = reaProject
 
+	---@type string
+	self.Name = reaper.GetProjectName(self._)
+
+	---@type string
+	self.RecordingPath = reaper.GetProjectPath()
+
+	---@type string
+	-- gsub("Media" .. "$", "") removes the trailing "Media" from self.RecordingPath.
+	-- This is used to assume the path of the project file, as it is usually in the same directory as the Media folder.
+	local assumedPath = self.RecordingPath:gsub("Media" .. "$", "")
+	local assumedFile = assumedPath .. self.Name .. ".rpp"
+	if reaper.file_exists(assumedFile) then
+		self.Path = assumedFile
+	else
+		-- NOTE: This will happen if the project is not saved yet, or if self.RecordingPath has been manually changed by the user.
+		return nil, "Project:New() could not find project file at assumed path: " .. assumedFile
+	end
+
 	return new, nil
+end
+
+-- TODO: in progress
+---Project.GetTracks Returns a table of all Tracks in the current project.
+---If no tracks are found, it returns nil.
+---@return {}Track | nil
+function Project:GetTracks()
 end
 
 ---Project.GetTrackByName retrieves a Track by its name in the current project.
@@ -29,7 +59,7 @@ end
 ---If no track with the given name is found, it returns nil.
 ---@param name string
 ---@return {}Track | nil
-function Project:GetTracksByName(name)
+function Project:GetAllTracksByName(name)
 	local tracks = {}
 	local numTracks = reaper.CountTracks(self._)
 	for i = 0, numTracks - 1 do

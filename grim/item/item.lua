@@ -1,3 +1,5 @@
+---@description This module provides a wrapper for the MediaItem type in REAPER.
+
 ---Item provides a wrapper for the reaper MediaItem type.
 ---It provides methods to interact with the item, such as getting its name,
 ---index, and track, as well as methods to select or deselect the item.
@@ -45,7 +47,7 @@ function Item:GetTake() --> Take (this will be a wrapper for reaper.MediaItem_Ta
 end
 
 -- TODO:
-function Item:GetSourceMedia() --> Source (this will be a wrapper for reaper.PCM_source or whatever it's called)
+function Item:GetSourceMedia() --> Media (this will be a wrapper for reaper.PCM_source or whatever it's called)
 end
 
 return {

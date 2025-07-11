@@ -4,7 +4,7 @@
 
 There are several other classes/types original to this library which are intended to increase quality-of-life, such as [`track.FolderDepth`](./grim/track/folderDepth.lua).
 
-Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) render table-related functionality.
+<!-- Utilizes the [Ultraschall API](https://mespotin.uber.space/Ultraschall/US_Api_Introduction_and_Concepts.html) render table-related functionality. -->
 
 All symbols have type annotations according to the [`lua-language-server` specification](https://github.com/LuaLS/lua-language-server/wiki/Annotations).
 
@@ -13,6 +13,11 @@ All symbols have type annotations according to the [`lua-language-server` specif
 <!-- ## setup -->
 <!-- Any ReaScript file that references this library needs to be able to import it from an absolute location that does not change from computer to computer. -->
 <!-- 1. Install the [Ultraschall API](https://github.com/Ultraschall/ultraschall-lua-api-for-reaper?tab=readme-ov-file#reapack) via ReaPack. -->
+
+> [!WARNING]
+>
+> **grim is a work in progress
+> and does not have a `1.0` release yet.**_
 
 ## why?
 
@@ -40,11 +45,14 @@ local track = getTrackByName("some track")
 And this is how one achieves the same thing with `grim`:
 
 ```lua
-require('grim')
-project = Project.New()
-track = project.GetTrackByName("some track") -- This returns the first match
--- Also available is `project.GetTracksByName()` (notice that "Tracks" is plural), which returns a table of all tracks named the query. 
+local project = grim.Project:New()
+local track = project:GetTrackByName("some track") -- This returns the first match
+-- Also available is `project:GetAllTracksByName()`, which returns a table of all tracks named the query. 
 ```
+
+<!-- TODO: Uncomment once this is actually true :p
+Additionally, calls like `defer()` are typically no longer necessary, as they are called at the appropriate times by the functions in this library. You can focus on actually writing functionality, not dancing our Reaper's needs.
+-->
 
 ## use
 
