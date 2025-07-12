@@ -1,0 +1,1 @@
+-- Provides a wrapper for the Reaper TrackEnvelope type.

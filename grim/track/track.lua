@@ -14,6 +14,8 @@ local item = require("grim.item.item")
 ---@field isMaster boolean -- Whether the track is the master track.
 ---@field isParent boolean -- Whether the track has child tracks. This is set to true if the track has at least one child track, and false otherwise.
 ---@field parent Track | nil -- The parent Track of this Track, if it exists. If the track has no parent, this is nil.
+---@field isChild boolean -- Whether the track is a child track. This is set to true if the track has a parent, and false otherwise.
+---@field GUID string | nil -- The GUID of the track, if it exists. If the track does not have a GUID, this is nil.
 local Track = {}
 
 ---Track.New returns a newly initialized Track object.
@@ -124,7 +126,7 @@ end
 
 ---Track.GetItems returns a list of media items in the track.
 ---Returns nil if the track has no media items.
----@return {}gItem.Item | nil
+---@return Item[] | nil
 function Track:GetItems()
 	local items = {}
 
@@ -209,7 +211,7 @@ end
 
 ---Track.GetChildTracks returns a table of child Tracks of the current Track.
 ---Returns nil if the track has no child Tracks.
----@return {}Track | nil
+---@return Track[] | nil
 function Track:GetChildTracks()
 	local childTracks = {}
 	local numTracks = reaper.CountTracks(self.project)
@@ -235,6 +237,110 @@ function Track:GetChildTracks()
 
 	Track.IsParent = true
 	return childTracks
+end
+
+-- TODO:
+-- function Track:SetColor()
+-- end
+
+-- TODO:
+-- function Track:GetParentColor()
+-- end
+
+---Track.IsMuted returns whether the Track is muted in the Reaper GUI.
+---@return boolean
+function Track:IsMuted()
+	local isMuted = reaper.GetMediaTrackInfo_Value(self._, "B_MUTE")
+	if isMuted == 1 then
+		return true
+	end
+	return false
+end
+
+---Track.Mute mutes the Track in the Reaper GUI.
+---If the Track is already muted, it does nothing.
+---@return nil
+function Track:Mute()
+	if not self:IsMuted() then
+		reaper.SetMediaTrackInfo_Value(self._, "B_MUTE", 0)
+	end
+end
+
+---Track.Unmute unmutes the Track in the Reaper GUI.
+---If the Track is already not muted, it does nothing.
+---@return nil
+function Track:Unmute()
+	if self:IsMuted() then
+		reaper.SetMediaTrackInfo_Value(self._, "B_MUTE", 1)
+	end
+end
+
+---Track.ToggleMute toggles the mute state of the Track in the Reaper GUI.
+---If the Track is muted, it unmutes it.
+---If the Track is not muted, it mutes it.
+---@return nil
+function Track:ToggleMute()
+	if self:IsMuted() then
+		self:Unmute()
+	else
+		self:Mute()
+	end
+end
+
+---Track.IsSoloed returns whether the Track is soloed in the Reaper GUI.
+---@return boolean	
+function Track:IsSoloed()
+	local isSoloed = reaper.GetMediaTrackInfo_Value(self._, "B_SOLO")
+	if isSoloed == 1 then
+		return true
+	end
+	return false
+end
+
+---Track.Solo solos the Track in the Reaper GUI.
+---If the Track is already soloed, it does nothing.
+---@return nil
+function Track:Solo()
+	if not self:IsSoloed() then
+		reaper.SetMediaTrackInfo_Value(self._, "B_SOLO", 1)
+	end
+end
+
+--- Track.Unsolo unsolos the Track in the Reaper GUI.
+--- If the Track is already not soloed, it does nothing.
+---@return nil
+function Track:Unsolo()
+	if self:IsSoloed() then
+		reaper.SetMediaTrackInfo_Value(self._, "B_SOLO", 0)
+	end
+end
+
+function Track:ToggleSolo()
+	if self:IsSoloed() then
+		self:Unsolo()
+	else
+		self:Solo()
+	end
+end
+
+---Track.GetGUID returns the GUID of the Track.
+---If the Track does not have a GUID, it returns nil.
+---
+-- TODO: Check if the following comment suggested by Copilot is correct:
+---This is a cached value, so it will only be retrieved once per Track object.
+---Subsequent calls will return the cached value.
+---This is useful for performance, as getting the GUID can be expensive.
+---@return string | nil
+function Track:GetGUID()
+	if not self.GUID then
+		self.GUID = reaper.GetTrackGUID(self._)
+	end
+
+	if not self.GUID or self.GUID == "" then
+		return nil
+	end
+
+	return self.GUID
 end
 
 return {

@@ -47,18 +47,76 @@ function Project:New(reaProject)
 	return new, nil
 end
 
--- TODO: in progress
 ---Project.GetTracks Returns a table of all Tracks in the current project.
 ---If no tracks are found, it returns nil.
----@return {}Track | nil
+---@return Track[] | nil
 function Project:GetTracks()
+	local numTracks = reaper.CountTracks(self._)
+
+	if numTracks == 0 then
+		return nil
+	end
+
+	local tracks = {}
+	for i = 0, numTracks - 1 do
+		local mediaTrack = reaper.GetTrack(self._, i)
+		local newTrack, err = track.Track:New(self._, mediaTrack)
+		if newTrack == nil or newTrack == err then
+			error("Project:GetTracks() failed to create Track: " .. (err or "unknown error"))
+		end
+		table.insert(tracks, newTrack)
+	end
+
+	if #tracks >= 1 then
+		return tracks
+	end
+
+	return nil
+end
+
+---Project.SelectAllTracks selects all Tracks in the current project.
+---If no tracks are found, it returns an error message.
+---@return string | nil
+function Project:SelectAllTracks()
+	local tracks = self:GetTracks()
+	if not tracks then
+		return "Project:SelectAllTracks() failed to get tracks."
+	end
+
+	for _, track in ipairs(tracks) do
+		local err = track:Select()
+		if err then
+			return "Project:SelectAllTracks() failed to select track: " .. (err or "unknown error")
+		end
+	end
+
+	return nil
+end
+
+---Project.DeselectAllTracks deselects all Tracks in the current project.
+---If no tracks are found, it returns an error message.
+---@return string | nil
+function Project:DeselectAllTracks()
+	local tracks = self:GetTracks()
+	if not tracks then
+		return "Project:DeselectAllTracks() failed to get tracks."
+	end
+
+	for _, track in ipairs(tracks) do
+		local err = track:Deselect()
+		if err then
+			return "Project:DeselectAllTracks() failed to deselect track: " .. (err or "unknown error")
+		end
+	end
+
+	return nil
 end
 
 ---Project.GetTrackByName retrieves a Track by its name in the current project.
 ---Retuns a table of Tracks, even if only one match is found.
 ---If no track with the given name is found, it returns nil.
 ---@param name string
----@return {}Track | nil
+---@return Track[] | nil
 function Project:GetAllTracksByName(name)
 	local tracks = {}
 	local numTracks = reaper.CountTracks(self._)
