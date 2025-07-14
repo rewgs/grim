@@ -43,7 +43,7 @@ function Item:GetTrack() --> Track
 end
 
 -- TODO:
-function Item:GetTake() --> Take (this will be a wrapper for reaper.MediaItem_Take)
+function Item:GetTake() --> Take
 end
 
 -- TODO:
