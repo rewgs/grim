@@ -1,5 +1,9 @@
 # grim
 
+<p align="center">
+  <img src="./assets/icon.png"/>
+</p>
+
 `grim` is a library that significantly speeds up ReaScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). It wraps each of ReaScript's data types (`ReaProject`, `MediaTrack`, `MediaItem`, etc) with a [class](https://www.lua.org/pil/16.1.html) (`Project`, `Track`, and `Item`, respectively); each class provides a number of useful methods, and each class's namespace provides some utility functions related to it.
 
 There are several other classes/types original to this library which are intended to increase quality-of-life, such as [`track.FolderDepth`](./grim/track/folderDepth.lua).
@@ -21,7 +25,7 @@ All symbols have type annotations according to the [`lua-language-server` specif
 
 ## why?
 
-While the ReaScript API is extensive and provides a _lot_ of functionality, it isn't built for expressiveness -- Reaper script developers often find themselves writing a lot of the same code over and over, and most tasks take more lines of code than seems necessary. 
+While the ReaScript API is extensive and provides a _lot_ of functionality, it isn't built for expressiveness -- Reaper script developers often find themselves writing a lot of the same code over and over, and most tasks take more lines of code than seems necessary.
 
 For example, this is how one might go about getting a particular track by name:
 
@@ -47,7 +51,7 @@ And this is how one achieves the same thing with `grim`:
 ```lua
 local project = grim.Project:New()
 local track = project:GetTrackByName("some track") -- This returns the first match
--- Also available is `project:GetAllTracksByName()`, which returns a table of all tracks named the query. 
+-- Also available is `project:GetAllTracksByName()`, which returns a table of all tracks named the query.
 ```
 
 <!-- TODO: Uncomment once this is actually true :p
@@ -57,3 +61,4 @@ Additionally, calls like `defer()` are typically no longer necessary, as they ar
 ## use
 
 It is highly recommended that you use VS Code along with [Antoine Balaine](https://www.linkedin.com/in/antoinebalaine/)'s excellent [`REAPER ReaScript`](https://marketplace.visualstudio.com/items?itemName=AntoineBalaine.reascript-docs) extension, as `grim`'s type annotations for Reaper's types are in accordance with this extension.
+
