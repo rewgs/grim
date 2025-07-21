@@ -51,8 +51,7 @@ And this is how one achieves the same thing with `grim`:
 
 ```lua
 local project = grim.Project:New()
-local track = project:GetTrackByName("some track") -- This returns the first match
--- Also available is `project:GetAllTracksByName()`, which returns a table of all tracks named the query.
+local track = project:GetTrackByName("some track")
 ```
 
 <!-- TODO: Uncomment once this is actually true :p
