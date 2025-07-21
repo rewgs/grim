@@ -26,7 +26,7 @@ All symbols have type annotations according to the [`lua-language-server` specif
 
 ## why?
 
-While the ReaScript API is extensive and provides a _lot_ of functionality, it isn't built for expressiveness -- Reaper script developers often find themselves writing a lot of the same code over and over, and most tasks take more lines of code than seems necessary.
+While the ReaScript API is extensive, it isn't _expressive_ -- ReaScript developers often find themselves writing a lot of the same code over and over, and most tasks take more lines of code than seems necessary.
 
 For example, this is how one might go about getting a particular track by name:
 
