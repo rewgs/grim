@@ -1,7 +1,8 @@
 # grim
 
 <p align="center">
-  <img src="./assets/icon.png"/>
+    <!-- Original width: 512 px -->
+  <img src="./assets/icon.png" width="256"/>
 </p>
 
 `grim` is a library that significantly speeds up ReaScript development by providing a more object-oriented approach for interacting with the Reaper [ReaScript Lua API](https://www.reaper.fm/sdk/reascript/reascripthelp.html#l). It wraps each of ReaScript's data types (`ReaProject`, `MediaTrack`, `MediaItem`, etc) with a [class](https://www.lua.org/pil/16.1.html) (`Project`, `Track`, and `Item`, respectively); each class provides a number of useful methods, and each class's namespace provides some utility functions related to it.
@@ -61,4 +62,3 @@ Additionally, calls like `defer()` are typically no longer necessary, as they ar
 ## use
 
 It is highly recommended that you use VS Code along with [Antoine Balaine](https://www.linkedin.com/in/antoinebalaine/)'s excellent [`REAPER ReaScript`](https://marketplace.visualstudio.com/items?itemName=AntoineBalaine.reascript-docs) extension, as `grim`'s type annotations for Reaper's types are in accordance with this extension.
-
