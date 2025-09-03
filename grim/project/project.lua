@@ -150,6 +150,12 @@ function Project:GetTrackByName(name)
 	-- TODO: call GetTracksByName and then return Track with lowest index.
 end
 
+-- TODO:
+function Project:GetFramerate() end
+
+-- TODO:
+function Project:ChangeFramerate() end
+
 return {
 	Project = Project,
 }
