@@ -9,16 +9,23 @@ grim
     new <name> <path>: Creates a new ReaScript project. If <path> is ommitted, the current directory is used; if the path already exists but is not empty, an error is raised.
         -l, --lib <path>: Specify the path to the grim library; if ommitted, assumes ./lib; if not present, adds to .grim.json requirements section.
         -L, --no-lib: Do not include `https://github.com/rewgs/grim@latest` as git submodule; if ommitted, the git command to pull down submodules runs automatically if the computer is connected to the internet
+
     test: Runs tests; runs all by default
         list: Lists all tests
         new <name> <path>: Creates a new test. If <path> is ommitted, the current directory is used; if the path already exists but is not empty, an error is raised.
             -t, --template <template>: The template .rpp file from which to create the nw file.
         run <test>: Runs a test by name or number
+
     build: Builds the source code files via a preprocessor so that no require statements end up in the final code
+
     dist: The result of `build`
+
     run: Run a script as defined in .grim.json file "scripts" section
+
     register: Symlinks the project's `dist` directory to `$REAPER_PREFERENCES/Scripts/grim/$project_name`
+
     unregister: Deletes the project's symlink created by `grim register`, if present
+
     init-dev: Creates .grim.json if not present and sets `"dev": true` if not already set; adds developer scripts to `.grim.json` if not already present.
 ```
 
@@ -32,6 +39,7 @@ Setting `"env": true` in [`.grim.json`](#.grim.json) "unlocks" the following com
 grim
     format <path>: Formats files according to ? formatter
         -a, --all
+    lint <path>: Lint files according to ? linter
 ```
 
 ## `.grim.json` file
@@ -94,6 +102,9 @@ tests/
 
 ```jsonc
 {
-    "name": "my first test"
+    "name": "my first test",
+    "daw": {
+        "require": true
+    }
 }
 ```
