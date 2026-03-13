@@ -10,6 +10,11 @@ grim
         -l, --lib <path>: Specify the path to the grim library; if ommitted, assumes ./lib; if not present, adds to .grim.json requirements section.
         -L, --no-lib: Do not include `https://github.com/rewgs/grim@latest` as git submodule; if ommitted, the git command to pull down submodules runs automatically if the computer is connected to the internet
     test: Runs tests
+        list: Lists all tests
+        new <name> <path>: Creates a new test. If <path> is ommitted, the current directory is used; if the path already exists but is not empty, an error is raised.
+            -t, --template <template>: The template .rpp file from which to create the nw file.
+        run <test>: Runs a test by name or number
+            -a, --all: Runs all tests
     build: Builds the source code files via a preprocessor so that no require statements end up in the final code
     dist: The result of `build`
     run: Run a script as defined in .grim.json file "scripts" section
@@ -30,25 +35,6 @@ grim
         -a, --all
 ```
 
-## file hierarchy
-
-The file hierarchy of new ReaScript project created by `grim` consists of the following.
-
-```
-.
-    dist/           - The result of `grim build`
-    lib/            - Libraries to use with `src`
-        grim/       - The grim ReaScript library source code
-    src/            - source code
-        .gitkeep
-    tests/          - test files
-        .gitkeep
-    .git            - git repo is already initialized
-    .gitignore      - Ignores `dist` and `lib` by default
-    .grim.json      - Settings for `grim`
-    .README.md
-```
-
 ## `.grim.json` file
 
 ```jsonc
@@ -67,5 +53,51 @@ The file hierarchy of new ReaScript project created by `grim` consists of the fo
             "no-run": false // Enables the user to simply call `grim format` instead of `grim run format`.
         }
     ]
+}
+```
+
+## anatony of a project created with `grim`
+
+The file hierarchy of new ReaScript project created by `grim` consists of the following.
+
+```
+.
+    dist/           - The result of `grim build`
+    lib/            - Libraries to use with `src`
+        grim/       - The grim ReaScript library source code
+    src/            - source code
+        .gitkeep
+    tests/          - test files
+        .gitkeep
+    .git            - git repo is already initialized
+    .gitignore      - Ignores `dist` and `lib` by default
+    .grim.json      - Settings for `grim`
+    .README.md
+```
+
+## tests
+
+Testing an API for a DAW is hard. Until now, the "state of the art" has been reaper print statements. It was clear that a
+
+Just as ReaScript project created with `grim new` results in a project "scaffolding," `grim test new` creates a new test "scaffolding."
+
+```
+tests/
+    daw/
+        templates/      -
+            .gitkeep
+    0/
+        daw/            - Reaper sessions used in testing created via `reaper -new` or `reaper -template filename.rpp`
+        main.lua        - The test's entrypoint
+        test.json       - The test's config file
+```
+
+### `test.json`
+
+```jsonc
+{
+    "name": "my first test"
+    "scripts": { // these are the actual tests
+    }
 }
 ```
