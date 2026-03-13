@@ -9,12 +9,11 @@ grim
     new <name> <path>: Creates a new ReaScript project. If <path> is ommitted, the current directory is used; if the path already exists but is not empty, an error is raised.
         -l, --lib <path>: Specify the path to the grim library; if ommitted, assumes ./lib; if not present, adds to .grim.json requirements section.
         -L, --no-lib: Do not include `https://github.com/rewgs/grim@latest` as git submodule; if ommitted, the git command to pull down submodules runs automatically if the computer is connected to the internet
-    test: Runs tests
+    test: Runs tests; runs all by default
         list: Lists all tests
         new <name> <path>: Creates a new test. If <path> is ommitted, the current directory is used; if the path already exists but is not empty, an error is raised.
             -t, --template <template>: The template .rpp file from which to create the nw file.
         run <test>: Runs a test by name or number
-            -a, --all: Runs all tests
     build: Builds the source code files via a preprocessor so that no require statements end up in the final code
     dist: The result of `build`
     run: Run a script as defined in .grim.json file "scripts" section
@@ -84,12 +83,11 @@ Just as ReaScript project created with `grim new` results in a project "scaffold
 ```
 tests/
     daw/
-        templates/      -
-            .gitkeep
+        templates/      - Template .rpp files used to create new files via `reaper -template filename.rpp`
     0/
         daw/            - Reaper sessions used in testing created via `reaper -new` or `reaper -template filename.rpp`
-        main.lua        - The test's entrypoint
-        test.json       - The test's config file
+        main.lua        - The test's entrypoint (any number of other lua files can be used, but each test must contain a main.lua file)
+        test.json       - The test's config fil
 ```
 
 ### `test.json`
@@ -97,7 +95,5 @@ tests/
 ```jsonc
 {
     "name": "my first test"
-    "scripts": { // these are the actual tests
-    }
 }
 ```
