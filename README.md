@@ -26,7 +26,7 @@ The `grim` command line adheres to the settings in the project's [`grim.json`](#
 
 ### dev commands
 
-Setting `"env": true` in [`.grim.json`](#.grim.json) "unlocks" the following commands which are intended to aid in the development of the [`grim`](https://github.com/rewgs/grim) library:
+Setting `"dev": true` in [`.grim.json`](#.grim.json) "unlocks" the following commands which are intended to aid in the development of the [`grim`](https://github.com/rewgs/grim) library:
 
 ```
 grim
@@ -39,19 +39,17 @@ grim
 ```jsonc
 {
     "dev": true, // enables the use of commands helpful for when working on grim library source code
-    "env": true, // reads the .env file, if present
     "offline": true, // runs grim without an commands that require the internet (such as pulling down git submodules)
     "reascript": {},
-    "requisites": [
-        "github.com/rewgs/grim"
-    ]
+    "requisites": ["github.com/rewgs/grim"],
     "scripts": [
         {
             "name": "format",
             "command": "grim",
             "no-run": false // Enables the user to simply call `grim format` instead of `grim run format`.
         }
-    ]
+    ],
+    "tests dir": "./tests"
 }
 ```
 
@@ -76,7 +74,7 @@ The file hierarchy of new ReaScript project created by `grim` consists of the fo
 
 ## tests
 
-Testing an API for a DAW is hard. Until now, the "state of the art" has been reaper print statements. It was clear that a
+Testing an API for a DAW is difficult -- until now, the state of the art has been "print debugging."
 
 Just as ReaScript project created with `grim new` results in a project "scaffolding," `grim test new` creates a new test "scaffolding."
 
