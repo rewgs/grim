@@ -1,5 +1,10 @@
 package project
 
+import (
+	"os"
+	"path/filepath"
+)
+
 // Project defines a ReaScript project as created via `grim new`.
 type Project struct {
 	Name string
@@ -40,4 +45,22 @@ func (p *Project) Create() error {
 		".grim.json",
 		".README.md",
 	}
+
+	for _, dir := range dirs {
+		path := filepath.Join(p.Path, dir)
+		err := os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, file := range files {
+		path := filepath.Join(p.Path, file)
+		_, err := os.Create(path)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
