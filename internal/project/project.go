@@ -6,8 +6,8 @@ type Project struct {
 	Path string
 }
 
-// NewProject returns a newly-instantiated Project.
-func NewProject(name string) (*Project, error) {
+// New returns a newly-instantiated Project.
+func New(name string) (*Project, error) {
 	p := Project{
 		Name: name,
 	}
