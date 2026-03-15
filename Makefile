@@ -9,10 +9,13 @@ clean:
 test: clean
 	go test -v ./...
 
-run: clean
-	go run cmd/cli/main.go
+run: clean test 
+	go run cmd/main.go
 
+build: clean test
+	go build -o ./out/grim ./cmd/grim.go
+	
 all: 
 	clean
 	test
-	run
+	build
