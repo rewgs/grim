@@ -30,6 +30,7 @@ func New(name string, path string) *Project {
 	return &p
 }
 
+// Create makes all the directories and files in the Project's Path, initializes the git repo, and adds default values to .gitignore and README.md.
 func (p *Project) Create() error {
 	var dirs = []string{
 		"lib",
