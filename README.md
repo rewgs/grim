@@ -16,9 +16,7 @@ grim
             -t, --template <template>: The template .rpp file from which to create the nw file.
         run <test>: Runs a test by name or number
 
-    build: Builds the source code files via a preprocessor so that no require statements end up in the final code
-
-    dist: The result of `build`
+    build: Builds the source code files via a preprocessor so that no require statements end up in the final code (destination: `dist` dir).
 
     run: Run a script as defined in .grim.json file "scripts" section
 
