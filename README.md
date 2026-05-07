@@ -1,4 +1,6 @@
-`grim-cli` is a command-line tool similar to `npm` that helps developers write ReaScript. It is designed with the [`grim`](https://github.com/rewgs/grim) ReaScript library in mind, but does not require it.
+# Grim
+
+`grim` is a command-line tool similar to `npm` that helps developers write ReaScript. It is designed with the [`grimoire`](https://github.com/rewgs/grimoire) ReaScript library in mind, but does not require it.
 
 Because of its use of a preprocessor, all scripts and their dependencies are completely self-contained, meaning that your scripts can now use `require()` statements instead of `dofile()`.
 
